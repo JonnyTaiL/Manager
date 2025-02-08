@@ -8,7 +8,8 @@
 #include "W_TextBox_Default.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/TextBlock.h"
-
+#include "HTTPModule.h"
+#include "Interfaces/IHttpResponse.h"
 
 #include "W_LoginPanel.generated.h"
 
@@ -34,14 +35,43 @@ public:
 		UTextBlock* TXT_ErrorLog = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-		UWidgetSwitcher* WS_RegLogin;
+	UWidgetSwitcher* WS_RegLogin;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_Login;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_Password;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regLogin;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regPassword;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regAccessLevel;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regGroup;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regSurname;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regPatronomic; //—»Õ“¿ —»◊≈— ¿ﬂ Œÿ»¡ ¿!
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnEnterButtonClicked();
+	void OnLoginButtonClicked();
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoginRegistrationButtonClicked();
 	UFUNCTION(BlueprintNativeEvent)
 	void OnRegisterButtonClicked();
+
+	void UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 };
