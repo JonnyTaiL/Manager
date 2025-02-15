@@ -26,8 +26,6 @@ private:
 
 protected:
 
-	UFUNCTION()
-	void SetUserData(FString m_Login, FString m_Name, FString m_Surname, FString m_Patronumic, EPermissionType m_PermissionType, FString m_GroupName);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -47,6 +45,7 @@ public:
 
 
 
-	FManagerUserData GetUserData_Implementation() override;
+	 FManagerUserData GetUserData_Implementation() override;
+	 void SetUserData_Implementation(FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName) override;
 	
 };
