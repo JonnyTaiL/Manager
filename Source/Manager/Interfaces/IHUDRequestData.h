@@ -29,7 +29,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	FManagerUserData GetUserData();
 
-
+	UFUNCTION(BlueprintNativeEvent)
+	void SetUserData(FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName);
 
 
 };
