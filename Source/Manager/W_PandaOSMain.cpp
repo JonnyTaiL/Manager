@@ -13,6 +13,7 @@ void UW_PandaOSMain::UserAuthorize(FString Login, FString Password)
 	FString URL = "http://127.0.0.1:8000/checkuserdata";
 	URL = URL + "?login=" + Login + "&password=" + Password;
 
+	
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
 	Request->SetVerb("GET");
@@ -22,7 +23,11 @@ void UW_PandaOSMain::UserAuthorize(FString Login, FString Password)
 
 void UW_PandaOSMain::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-	FString answer = Response->GetContentAsString();
+	if(Response)
+	{
+		FString answer = Response->GetContentAsString();
+	}
+	
 	/*if (answer == "-1")
 	{
 		TB_Information->SetText(FText::FromString("User is not found, try to register in our system"));
@@ -69,7 +74,11 @@ void UW_PandaOSMain::UserRegister(FString Login, FString Password, FString Name,
 
 void UW_PandaOSMain::UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-	FString answer = Response->GetContentAsString();
+	if (Response)
+	{
+		FString answer = Response->GetContentAsString();
+	}
+
 
 }
 
