@@ -109,6 +109,11 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 	else if (answer == "0")
 	{
 		TXT_ErrorLog->SetText(FText::FromString("Íåïğàâèëüíûé ïàğîëü!"));
+
+		////////////
+		AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
+		FManagerUserData User = Cast<IIHUDRequestData>(Hud)->GetUserData_Implementation();
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, User.Name);
 	}
 	else
 	{
@@ -137,9 +142,23 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 			permission = EPermissionType::Student;
 		}
 
+
 		AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
-		Cast<IIHUDRequestData>(Hud)->SetUserData_Implementation(login, name, surname, patronymic, permission, group); //ÇÄÅÑÜ ÎØÈÁÊÀ!
-		FManagerUserData UserData = Cast<IIHUDRequestData>(Hud)->GetUserData_Implementation();
+		if (Hud->GetClass()->ImplementsInterface(UIHUDRequestData::StaticClass()))
+		{
+			IIHUDRequestData::Execute_SetUserData(Hud, login, name, surname, patronymic, permission, group);
+			 //ÇÄÅÑÜ ÎØÈÁÊÀ!  
+			FManagerUserData UserData = Cast<IIHUDRequestData>(Hud)->GetUserData_Implementation();
+
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Login);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Name);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Surname);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Patronumic);
+		}
+		
+
+
+
 	}
 }
 
