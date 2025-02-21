@@ -204,6 +204,9 @@ void UW_LoginPanel::UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResp
 void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) // Получение и обработка массива строк групп
 {
 	TArray<FString> StringArray;
+	
+	GroupsArray.Empty();
+
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
 	FString answer = Response->GetContentAsString();
 
