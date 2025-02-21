@@ -60,7 +60,7 @@ void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 		break;
 	}
 }
-
+//
 void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("RegistrationButtonClicked_CPP"));
