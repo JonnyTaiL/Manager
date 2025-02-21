@@ -99,6 +99,18 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 
 }
 
+void UW_LoginPanel::GetGroupsSend()
+{
+	//Отправка запроса на получение групп массивом строк
+
+	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetGroupsReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
 void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	FString answer = Response->GetContentAsString();
@@ -147,13 +159,6 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 		if (Hud->GetClass()->ImplementsInterface(UIHUDRequestData::StaticClass()))
 		{
 			IIHUDRequestData::Execute_SetUserData(Hud, login, name, surname, patronymic, permission, group);
-			 //ЗДЕСЬ ОШИБКА!  
-			FManagerUserData UserData = Cast<IIHUDRequestData>(Hud)->GetUserData_Implementation();
-
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Login);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Name);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Surname);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UserData.Patronumic);
 		}
 		
 
@@ -183,6 +188,30 @@ void UW_LoginPanel::UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResp
 		default:
 			break;
 		}
+	}
+}
+
+void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) // Получение и обработка массива строк групп
+{
+	TArray<FString> StringArray;
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+	{
+		if (JsonValue->Type == EJson::String)
+		{
+			StringArray.Add(JsonValue->AsString());
+		}
+	}
+
+	for (const FString& Str : StringArray)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s"), *Str); //Вывод тектовых данных
 	}
 }
 
