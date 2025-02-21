@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "W_LoginPanel.h"
@@ -23,28 +23,31 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LoginButtonClicked_CPP"));
 
-	//Логика на нажатие кнопки входа/авторизации
+	//Р›РѕРіРёРєР° РЅР° РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё РІС…РѕРґР°/Р°РІС‚РѕСЂРёР·Р°С†РёРё
+	if ((TB_Login->TB_TextBox->GetText().ToString() == "") || (TB_Password->TB_TextBox->GetText().ToString() == ""))
+	{
+		TXT_ErrorLog->SetText(FText::FromString(TEXT("Р’СЃРµ РїРѕР»СЏ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ Р·Р°РїРѕР»РЅРµРЅС‹")));
+	}
+	else {
+		FString Login = TB_Login->TB_TextBox->GetText().ToString();
+		FString Password = TB_Password->TB_TextBox->GetText().ToString();
 
-	FString Login = TB_Login->TB_TextBox->GetText().ToString();
-	FString Password = TB_Password->TB_TextBox->GetText().ToString();
+		FString URL = "http://127.0.0.1:8000/checkuserdata";
+		URL = URL + "?login=" + Login + "&password=" + Password;
 
-	FString URL = "http://127.0.0.1:8000/checkuserdata";
-	URL = URL + "?login=" + Login + "&password=" + Password;
-
-	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
-	Request->SetVerb("GET");
-	Request->SetURL(URL);
-	Request->ProcessRequest();
-
-
+		TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+		Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
+		Request->SetVerb("GET");
+		Request->SetURL(URL);
+		Request->ProcessRequest();
+	}
 }
 
 void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LoginRegistrationButtonClicked_CPP"));
 
-	//Логика на нажатие кнопки перехода между авторизацией и регистрацией
+	//Р›РѕРіРёРєР° РЅР° РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё РїРµСЂРµС…РѕРґР° РјРµР¶РґСѓ Р°РІС‚РѕСЂРёР·Р°С†РёРµР№ Рё СЂРµРіРёСЃС‚СЂР°С†РёРµР№
 	switch (WS_RegLogin->GetActiveWidgetIndex())
 	{
 	case 0:
@@ -65,11 +68,11 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("RegistrationButtonClicked_CPP"));
 
-	//Логика на нажатие кнопки регистрации
+	//Р›РѕРіРёРєР° РЅР° РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё СЂРµРіРёСЃС‚СЂР°С†РёРё
 
 	if ((TB_regLogin->TB_TextBox->GetText().ToString() == "") || (TB_regPassword->TB_TextBox->GetText().ToString() == "") || (TB_regName->TB_TextBox->GetText().ToString() == "") || (TB_regSurname->TB_TextBox->GetText().ToString() == "") || (TB_regPatronomic->TB_TextBox->GetText().ToString() == ""))
 	{
-		TXT_ErrorLog->SetText(FText::FromString("Все поля должны быть заполнены"));
+		TXT_ErrorLog->SetText(FText::FromString(TEXT("Р’СЃРµ РїРѕР»СЏ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ Р·Р°РїРѕР»РЅРµРЅС‹")));
 	}
 	else {
 		FString OutputString;
@@ -108,7 +111,7 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 
 void UW_LoginPanel::GetGroupsSend()
 {
-	//Отправка запроса на получение групп массивом строк
+	//РћС‚РїСЂР°РІРєР° Р·Р°РїСЂРѕСЃР° РЅР° РїРѕР»СѓС‡РµРЅРёРµ РіСЂСѓРїРї РјР°СЃСЃРёРІРѕРј СЃС‚СЂРѕРє
 
 	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
@@ -123,11 +126,11 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 	FString answer = Response->GetContentAsString();
 	if (answer == "-1")
 	{
-		TXT_ErrorLog->SetText(FText::FromString("Пользователь не найден, зарегистрируйтесь в системе"));
+		TXT_ErrorLog->SetText(FText::FromString(TEXT("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ, Р·Р°СЂРµРіРёСЃС‚СЂРёСЂСѓР№С‚РµСЃСЊ РІ СЃРёСЃС‚РµРјРµ")));
 	}
 	else if (answer == "0")
 	{
-		TXT_ErrorLog->SetText(FText::FromString("Неправильный пароль!"));
+		TXT_ErrorLog->SetText(FText::FromString(TEXT("РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ РїР°СЂРѕР»СЊ!")));
 
 		////////////
 		AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
@@ -136,11 +139,11 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 	}
 	else
 	{
-		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА И ПОЛУЧЕНИЕ ПОЛЯ ГРУППЫ ЧЕЛОВЕКА
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //РџРђР РЎРРќР“ JSON РћРўР’Р•РўРђ Р РџРћР›РЈР§Р•РќРР• РџРћР›РЇ Р“Р РЈРџРџР« Р§Р•Р›РћР’Р•РљРђ
 		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 		FJsonSerializer::Deserialize(JsonReader, JsonObject);
 
-		FString login = JsonObject->GetStringField("login"); //Присвоение переменным данных из JSON
+		FString login = JsonObject->GetStringField("login"); //РџСЂРёСЃРІРѕРµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹Рј РґР°РЅРЅС‹С… РёР· JSON
 		FString name = JsonObject->GetStringField("name");
 		FString surname = JsonObject->GetStringField("surname");
 		FString patronymic = JsonObject->GetStringField("patronymic");
@@ -178,7 +181,7 @@ void UW_LoginPanel::UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResp
 {
 	FString answer = Response->GetContentAsString();
 	if (answer == "0") {
-		TXT_ErrorLog->SetText(FText::FromString("Пользователь уже есть")); //ОШИБКА С РУССКИМ ЯЗЫКОМ
+		TXT_ErrorLog->SetText(FText::FromString(TEXT("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓР¶Рµ РµСЃС‚СЊ"))); //РћРЁРР‘РљРђ РЎ Р РЈРЎРЎРљРРњ РЇР—Р«РљРћРњ
 	}
 	else
 	{
@@ -198,13 +201,13 @@ void UW_LoginPanel::UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResp
 	}
 }
 
-void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) // Получение и обработка массива строк групп
+void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) // РџРѕР»СѓС‡РµРЅРёРµ Рё РѕР±СЂР°Р±РѕС‚РєР° РјР°СЃСЃРёРІР° СЃС‚СЂРѕРє РіСЂСѓРїРї
 {
 	TArray<FString> StringArray;
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
 	FString answer = Response->GetContentAsString();
 
-	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //РџРђР РЎРРќР“ JSON РћРўР’Р•РўРђ РњР°СЃСЃРёРІР°
 	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 	FJsonSerializer::Deserialize(JsonReader, JsonArray);
 
@@ -218,7 +221,7 @@ void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 
 	for (const FString& Str : StringArray)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s"), *Str); //Вывод тектовых данных
+		UE_LOG(LogTemp, Log, TEXT("%s"), *Str); //Р’С‹РІРѕРґ С‚РµРєС‚РѕРІС‹С… РґР°РЅРЅС‹С…
 	}
 }
 
