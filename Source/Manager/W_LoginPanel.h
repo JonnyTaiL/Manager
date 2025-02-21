@@ -70,8 +70,11 @@ public:
 	void OnLoginRegistrationButtonClicked();
 	UFUNCTION(BlueprintNativeEvent)
 	void OnRegisterButtonClicked();
+	UFUNCTION(BlueprintCallable)
+	void GetGroupsSend();
 
 	void UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 };
