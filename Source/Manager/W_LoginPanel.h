@@ -10,12 +10,18 @@
 #include "Components/TextBlock.h"
 #include "HTTPModule.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Manager/W_Textbox_Clickable.h"
 
 #include "W_LoginPanel.generated.h"
 
 /**
  * 
  */
+
+
+
+
+
 UCLASS()
 class MANAGER_API UW_LoginPanel : public UUserWidget
 {
@@ -24,6 +30,10 @@ class MANAGER_API UW_LoginPanel : public UUserWidget
 	virtual void NativeConstruct() override;
 
 public:
+
+
+	// WIDGET BINDING //
+
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 		UW_Button_Default* BTN_LoginRegistration;
@@ -52,8 +62,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_regAccessLevel;
 
+	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_regGroup;*/
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UW_TextBox_Default* TB_regGroup;
+	UW_Textbox_Clickable* TBC_regGroup;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_regName;
@@ -63,6 +76,21 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_regPatronomic; //—»Õ“¿ —»◊≈— ¿ﬂ Œÿ»¡ ¿!
+
+
+	//- WIDGET BINDING -//
+
+
+	// VARIABLES //
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> GroupsArray;
+
+
+
+
+
+
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoginButtonClicked();

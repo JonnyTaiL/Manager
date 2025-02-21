@@ -7,6 +7,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "ManagerTypes.h"
 #include "ManagerHUD.h"
+//#include "W_Button_Default.h"
+//#include "W_TextBox_Default.h"
+//#include "Components/WidgetSwitcher.h"
+//#include "Components/TextBlock.h"
 
 void UW_LoginPanel::NativeConstruct()
 {
@@ -45,6 +49,9 @@ void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 	{
 	case 0:
 		WS_RegLogin->SetActiveWidgetIndex(1);
+
+		GetGroupsSend();
+
 		break;
 	case 1:
 		WS_RegLogin->SetActiveWidgetIndex(0);
@@ -67,8 +74,8 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 	else {
 		FString OutputString;
 		FString URL = "http://127.0.0.1:8000/createuser";
-		FString Group = TB_regGroup->TB_TextBox->GetText().ToString();
-		FString Permission = TB_regGroup->TB_TextBox->GetText().ToString();
+		FString Group = TBC_regGroup->TXT_TextBlock->GetText().ToString();
+		FString Permission = TBC_regGroup->TXT_TextBlock->GetText().ToString();
 
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_regLogin->TB_TextBox->GetText().ToString());
@@ -205,7 +212,7 @@ void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	{
 		if (JsonValue->Type == EJson::String)
 		{
-			StringArray.Add(JsonValue->AsString());
+			GroupsArray.Add(JsonValue->AsString());
 		}
 	}
 
