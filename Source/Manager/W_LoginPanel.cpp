@@ -56,6 +56,7 @@ void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 		WS_RegLogin->SetActiveWidgetIndex(1);
 
 		GetGroupsSend();
+		GetPermissionsSend();
 
 		break;
 	case 1:
@@ -239,6 +240,8 @@ void UW_LoginPanel::GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponse
 {
 	TArray<FString> StringArray;
 
+	PermissionsArray.Empty();
+
 	//GroupsArray.Empty();
 
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
@@ -253,6 +256,7 @@ void UW_LoginPanel::GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponse
 		if (JsonValue->Type == EJson::String)
 		{
 			//GroupsArray.Add(JsonValue->AsString());
+			PermissionsArray.Add(JsonValue->AsString());
 		}
 	}
 }

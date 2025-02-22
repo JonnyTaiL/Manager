@@ -93,7 +93,8 @@ public:
 	TArray<FString> GroupsArray;
 
 
-
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> PermissionsArray;
 
 
 
