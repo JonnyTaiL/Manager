@@ -47,6 +47,8 @@ void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LoginRegistrationButtonClicked_CPP"));
 
+
+
 	//Логика на нажатие кнопки перехода между авторизацией и регистрацией
 	switch (WS_RegLogin->GetActiveWidgetIndex())
 	{
