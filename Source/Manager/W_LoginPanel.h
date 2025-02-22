@@ -48,6 +48,9 @@ public:
 	UWidgetSwitcher* WS_RegLogin;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UWidgetSwitcher* WS_PermissionGroups;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_Login;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -59,8 +62,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_regPassword;
 
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	//UW_TextBox_Default* TB_regAccessLevel;
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UW_TextBox_Default* TB_regAccessLevel;
+	UW_Textbox_Clickable* TBC_regAccessLevel;
 
 	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_regGroup;*/
