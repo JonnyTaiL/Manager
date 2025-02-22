@@ -77,8 +77,6 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 	else {
 		FString OutputString;
 		FString URL = "http://127.0.0.1:8000/createuser";
-		FString Group = TBC_regGroup->TXT_TextBlock->GetText().ToString();
-		FString Permission = TBC_regGroup->TXT_TextBlock->GetText().ToString();
 
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_regLogin->TB_TextBox->GetText().ToString());
@@ -86,8 +84,8 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 		JsonObject->SetStringField("name", TB_regName->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("surname", TB_regSurname->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("patronymic", TB_regPatronomic->TB_TextBox->GetText().ToString());
-		JsonObject->SetNumberField("group", FCString::Atoi(*Group));
-		JsonObject->SetNumberField("permission", FCString::Atoi(*Permission));
+		JsonObject->SetStringField("group", TBC_regGroup->TXT_TextBlock->GetText().ToString());
+		JsonObject->SetStringField("permission", TBC_regGroup->TXT_TextBlock->GetText().ToString());
 
 
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -112,6 +110,18 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 void UW_LoginPanel::GetGroupsSend()
 {
 	//Отправка запроса на получение групп массивом строк
+
+	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetGroupsReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void UW_LoginPanel::GetPermissionsSend()
+{
+	//Отправка запроса на получение уровней доступа массивом строк
 
 	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
@@ -221,10 +231,27 @@ void UW_LoginPanel::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 			GroupsArray.Add(JsonValue->AsString());
 		}
 	}
+}
 
-	for (const FString& Str : StringArray)
+void UW_LoginPanel::GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	TArray<FString> StringArray;
+
+	//GroupsArray.Empty();
+
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s"), *Str); //Вывод тектовых данных
+		if (JsonValue->Type == EJson::String)
+		{
+			//GroupsArray.Add(JsonValue->AsString());
+		}
 	}
 }
 

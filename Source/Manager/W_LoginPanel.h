@@ -100,9 +100,12 @@ public:
 	void OnRegisterButtonClicked();
 	UFUNCTION(BlueprintCallable)
 	void GetGroupsSend();
+	UFUNCTION(BlueprintCallable)
+	void GetPermissionsSend();
 
 	void UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void UserRegisterAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 };
