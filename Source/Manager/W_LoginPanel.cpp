@@ -93,7 +93,7 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 		JsonObject->SetStringField("surname", TB_regSurname->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("patronymic", TB_regPatronomic->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("group", TBC_regGroup->TXT_TextBlock->GetText().ToString());
-		JsonObject->SetStringField("permission", TBC_regGroup->TXT_TextBlock->GetText().ToString());
+		JsonObject->SetStringField("permission", TBC_regAccessLevel->TXT_TextBlock->GetText().ToString());
 
 
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -131,7 +131,9 @@ void UW_LoginPanel::GetPermissionsSend()
 {
 	//Отправка запроса на получение уровней доступа массивом строк
 
+
 	FString URL = "http://26.76.184.253:8000/getpermissionsdata";
+
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetPermissionsReceive);
 	Request->SetVerb("GET");
@@ -247,8 +249,6 @@ void UW_LoginPanel::GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponse
 
 	PermissionsArray.Empty();
 
-	//GroupsArray.Empty();
-
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
 	FString answer = Response->GetContentAsString();
 
@@ -260,7 +260,6 @@ void UW_LoginPanel::GetPermissionsReceive(FHttpRequestPtr Request, FHttpResponse
 	{
 		if (JsonValue->Type == EJson::String)
 		{
-			//GroupsArray.Add(JsonValue->AsString());
 			PermissionsArray.Add(JsonValue->AsString());
 		}
 	}
