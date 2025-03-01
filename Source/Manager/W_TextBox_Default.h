@@ -25,4 +25,5 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	UEditableTextBox* TB_TextBox = nullptr;
 
+
 };
