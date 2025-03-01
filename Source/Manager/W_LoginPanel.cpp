@@ -185,13 +185,14 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 		}
 
 
+
 		AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
 		if (Hud->GetClass()->ImplementsInterface(UIHUDRequestData::StaticClass()))
 		{
 			IIHUDRequestData::Execute_SetUserData(Hud, login, name, surname, patronymic, permission, group);
 		}
 		
-
+		this->RemoveFromParent();
 
 
 	}
