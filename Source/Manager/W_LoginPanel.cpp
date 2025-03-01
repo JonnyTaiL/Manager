@@ -17,6 +17,11 @@ void UW_LoginPanel::NativeConstruct()
 	BTN_Enter->OnDefaultButtonClicked.AddDynamic(this, &UW_LoginPanel::OnLoginButtonClicked);
 	BTN_LoginRegistration->OnDefaultButtonClicked.AddDynamic(this, &UW_LoginPanel::OnLoginRegistrationButtonClicked);
 	BTN_Register->OnDefaultButtonClicked.AddDynamic(this, &UW_LoginPanel::OnRegisterButtonClicked);
+
+
+	//GetGroupsSend();
+	//GetPermissionsSend();
+
 }
 
 void UW_LoginPanel::OnLoginButtonClicked_Implementation()
@@ -32,7 +37,7 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 		FString Login = TB_Login->TB_TextBox->GetText().ToString();
 		FString Password = TB_Password->TB_TextBox->GetText().ToString();
 
-		FString URL = "http://127.0.0.1:8000/checkuserdata";
+		FString URL = "http://26.76.184.253:8000/checkuserdata";
 		URL = URL + "?login=" + Login + "&password=" + Password;
 
 		TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
@@ -55,8 +60,8 @@ void UW_LoginPanel::OnLoginRegistrationButtonClicked_Implementation()
 	case 0:
 		WS_RegLogin->SetActiveWidgetIndex(1);
 
-		GetGroupsSend();
-		GetPermissionsSend();
+		//GetGroupsSend();
+		//GetPermissionsSend();
 
 		break;
 	case 1:
@@ -79,7 +84,7 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 	}
 	else {
 		FString OutputString;
-		FString URL = "http://127.0.0.1:8000/createuser";
+		FString URL = "http://26.76.184.253:8000/createuser";
 
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_regLogin->TB_TextBox->GetText().ToString());
@@ -114,7 +119,7 @@ void UW_LoginPanel::GetGroupsSend()
 {
 	//Отправка запроса на получение групп массивом строк
 
-	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
+	FString URL = "http://26.76.184.253:8000/getgroupsdata";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetGroupsReceive);
 	Request->SetVerb("GET");
@@ -126,9 +131,9 @@ void UW_LoginPanel::GetPermissionsSend()
 {
 	//Отправка запроса на получение уровней доступа массивом строк
 
-	FString URL = "http://127.0.0.1:8000/getgpoupsdata";
+	FString URL = "http://26.76.184.253:8000/getpermissionsdata";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetGroupsReceive);
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetPermissionsReceive);
 	Request->SetVerb("GET");
 	Request->SetURL(URL);
 	Request->ProcessRequest();
