@@ -27,6 +27,16 @@ void UW_LoginPanel::NativeConstruct()
 void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LoginButtonClicked_CPP"));
+	/*FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	FString variant_id;
+	URL = URL + "?variant_id=" + variant_id;
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest()*/;
+
 
 	//Логика на нажатие кнопки входа/авторизации
 	if ((TB_Login->TB_TextBox->GetText().ToString() == "") || (TB_Password->TB_TextBox->GetText().ToString() == ""))
@@ -143,6 +153,34 @@ void UW_LoginPanel::GetPermissionsSend()
 
 void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
+	/*TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+	{
+		TSharedPtr<FJsonObject> JsonObject = JsonValue->AsObject();
+
+		FString Question = JsonObject->GetStringField("question_text");
+		int16 QuestionType = JsonObject->GetNumberField("question_type");
+		FString Answer_1 = JsonObject->GetStringField("answer_1");
+		FString Answer_2 = JsonObject->GetStringField("answer_2");
+		FString Answer_3 = JsonObject->GetStringField("answer_3");
+		FString Answer_4 = JsonObject->GetStringField("answer_4");
+		FString Correct_Answer = JsonObject->GetStringField("answer_correct");
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Question);
+		UE_LOG(LogTemp, Warning, TEXT("%d"), QuestionType);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_1);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_2);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_3);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_4);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Correct_Answer);
+	}*/
+
+
 	FString answer = Response->GetContentAsString();
 	if (answer == "-1")
 	{
