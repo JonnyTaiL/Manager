@@ -52,3 +52,31 @@ struct FManagerUserData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString GroupName = "";
 };
+
+
+
+USTRUCT(BlueprintType)
+struct FTestDataStruct
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText QuestionText;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 QuestionType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Answer_1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Answer_2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Answer_3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Answer_4;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText CorrectAnswer;
+
+
+
+
+};
