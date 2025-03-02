@@ -98,7 +98,6 @@ public:
 
 
 
-
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoginButtonClicked();
 	UFUNCTION(BlueprintNativeEvent)
