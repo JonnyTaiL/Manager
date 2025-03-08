@@ -38,7 +38,8 @@ struct FManagerUserData
 {
 	GENERATED_BODY()
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 UserID = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Login = "";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,25 +57,25 @@ struct FManagerUserData
 
 
 USTRUCT(BlueprintType)
-struct FTestDataStruct
+struct FTestDataArrayStruct
 {
 	GENERATED_BODY()
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText QuestionText;
+	FString QuestionText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 QuestionType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Answer_1;
+	FString Answer_1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Answer_2;
+	FString Answer_2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Answer_3;
+	FString Answer_3;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Answer_4;
+	FString Answer_4;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText CorrectAnswer;
+	FString CorrectAnswer;
 
 
 

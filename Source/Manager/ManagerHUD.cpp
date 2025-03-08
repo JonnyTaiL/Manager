@@ -23,6 +23,7 @@ void AManagerHUD::NativeConstruct()
 FManagerUserData AManagerHUD::GetUserData_Implementation()
 {
 	FManagerUserData UserData;
+	UserData.UserID = UserID;
 	UserData.Login = Login;
 	UserData.Name = Name;
 	UserData.Surname = Surname;
@@ -33,8 +34,9 @@ FManagerUserData AManagerHUD::GetUserData_Implementation()
 	return UserData;
 }
 
-void AManagerHUD::SetUserData_Implementation(FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName)
+void AManagerHUD::SetUserData_Implementation(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName)
 {
+	UserID = m_UserID;
 	Login = m_Login;
 	Name = m_Name;
 	Surname = m_Surname;

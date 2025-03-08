@@ -8,6 +8,7 @@
 #include "Manager/PandaOS/Tests/W_TestsSlot.h"
 #include "HTTPModule.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Manager/ManagerTypes.h"
 
 #include "W_TestsWindowBody.generated.h"
 
@@ -39,6 +40,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> TestsArrayIds;
 
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FTestDataArrayStruct> TestDataArray;
+
 
 
 
@@ -47,11 +51,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GetVariantsDataSend();
-
 	void GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void GetTestDataArraySend(FString Id);
+	void GetTestDataArrayRecieve(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-
+	UFUNCTION(BlueprintCallable)
+	void AddCompletedVariantSend(int32 UserId, int32 VarID, int32 Score);
+	void AddCompletedVariantRecieve(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	
 };
