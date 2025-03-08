@@ -38,7 +38,8 @@ struct FManagerUserData
 {
 	GENERATED_BODY()
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 UserID = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Login = "";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -51,4 +52,32 @@ struct FManagerUserData
 	EPermissionType PermissionType = EPermissionType::Student;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString GroupName = "";
+};
+
+
+
+USTRUCT(BlueprintType)
+struct FTestDataArrayStruct
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString QuestionText;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 QuestionType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_4;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString CorrectAnswer;
+
+
+
+
 };
