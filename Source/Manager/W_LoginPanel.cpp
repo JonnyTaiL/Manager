@@ -153,31 +153,7 @@ void UW_LoginPanel::GetPermissionsSend()
 
 void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-	/*TArray<TSharedPtr<FJsonValue>> JsonArray;
-	FString answer = Response->GetContentAsString();
-
-	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
-	FJsonSerializer::Deserialize(JsonReader, JsonArray);
-
-	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
-	{
-		TSharedPtr<FJsonObject> JsonObject = JsonValue->AsObject();
-
-		FString Question = JsonObject->GetStringField("question_text");
-		int16 QuestionType = JsonObject->GetNumberField("question_type");
-		FString Answer_1 = JsonObject->GetStringField("answer_1");
-		FString Answer_2 = JsonObject->GetStringField("answer_2");
-		FString Answer_3 = JsonObject->GetStringField("answer_3");
-		FString Answer_4 = JsonObject->GetStringField("answer_4");
-		FString Correct_Answer = JsonObject->GetStringField("answer_correct");
-
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Question);
-		UE_LOG(LogTemp, Warning, TEXT("%d"), QuestionType);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_1);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_2);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_3);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Answer_4);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *Correct_Answer);
+	/*
 	}*/
 
 
@@ -201,12 +177,18 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 		FJsonSerializer::Deserialize(JsonReader, JsonObject);
 
+		int32 UserID = JsonObject->GetNumberField("user_id");
 		FString login = JsonObject->GetStringField("login"); //Присвоение переменным данных из JSON
 		FString name = JsonObject->GetStringField("name");
 		FString surname = JsonObject->GetStringField("surname");
 		FString patronymic = JsonObject->GetStringField("patronymic");
 		FString permission_string = JsonObject->GetStringField("permission_type");
 		FString group = JsonObject->GetStringField("group_name");
+
+
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(UserID));
+
 
 		EPermissionType permission;
 		if (permission_string == "Admin") {
@@ -227,7 +209,7 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 		AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
 		if (Hud->GetClass()->ImplementsInterface(UIHUDRequestData::StaticClass()))
 		{
-			IIHUDRequestData::Execute_SetUserData(Hud, login, name, surname, patronymic, permission, group);
+			IIHUDRequestData::Execute_SetUserData(Hud, UserID, login, name, surname, patronymic, permission, group);
 		}
 		
 		this->RemoveFromParent();

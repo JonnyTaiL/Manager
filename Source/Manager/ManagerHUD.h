@@ -29,6 +29,8 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 UserID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Login;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Name;
@@ -49,7 +51,7 @@ public:
 	virtual FManagerUserData GetUserData_Implementation() override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetUserData(FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName);
-	virtual void SetUserData_Implementation(FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName) override;
+	void SetUserData(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName);
+	virtual void SetUserData_Implementation(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName) override;
 	
 };
