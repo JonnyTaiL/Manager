@@ -207,3 +207,42 @@ void UW_TestsWindowBody::AddCompletedVariantRecieve(FHttpRequestPtr Request, FHt
 {
 
 }
+
+void UW_TestsWindowBody::GetCompletedVariantsDataSend(FString Id)
+{
+	FString URL = "http://26.76.184.253:8000/getcompletedvariantsdata";
+	FString variant_id = Id;
+	URL = URL + "?user_id=" + variant_id;
+
+
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetCompletedVariantsDataReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void UW_TestsWindowBody::GetCompletedVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	//TArray<FString> StringArray;
+
+	CompletedTestsArrayIds.Empty();
+
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //������� JSON ������ �������
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+		CompletedTestsArrayIds.Add(JsonValue->AsString());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, JsonValue->AsString());
+
+	}
+}

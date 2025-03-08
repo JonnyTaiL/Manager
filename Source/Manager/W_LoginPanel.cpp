@@ -42,6 +42,9 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 	if ((TB_Login->TB_TextBox->GetText().ToString() == "") || (TB_Password->TB_TextBox->GetText().ToString() == ""))
 	{
 		TXT_ErrorLog->SetText(FText::FromString(TEXT("Все поля должны быть заполнены")));
+
+
+		// Сделать появление строки ошибок при ее выводе
 	}
 	else {
 		FString Login = TB_Login->TB_TextBox->GetText().ToString();

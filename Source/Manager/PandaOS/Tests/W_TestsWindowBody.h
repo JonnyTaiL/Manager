@@ -39,6 +39,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> TestsArrayIds;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> CompletedTestsArrayIds;
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FTestDataArrayStruct> TestDataArray;
@@ -60,6 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddCompletedVariantSend(int32 UserId, int32 VarID, int32 Score);
 	void AddCompletedVariantRecieve(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void GetCompletedVariantsDataSend(FString Id);
+	void GetCompletedVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	
 };
