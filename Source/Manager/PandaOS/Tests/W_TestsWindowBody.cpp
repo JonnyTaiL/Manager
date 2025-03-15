@@ -22,53 +22,25 @@ void UW_TestsWindowBody::GetVariantsDataSend()
 {
 
 	AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
-	//if (Hud->GetClass()->ImplementsInterface(UIHUDRequestData::StaticClass()))
-	//{
-	//	IIHUDRequestData::;
-	//}
-
 	AManagerHUD* MHud = Cast<AManagerHUD>(Hud);
 	FString group = MHud->GroupName;
 
-
-
-	FString URL = "http://26.76.184.253:8000/getvariantsdata";
-	URL = URL + "?group=" + group;
-	FString OutputString;
-
-
-
-	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetVariantsDataReceive);
-	Request->SetVerb("GET");
-	Request->SetURL(URL);
-	Request->ProcessRequest();
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
-
-
-	/*
 	FString URL = "http://26.76.184.253:8000/getvariantsdata";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 	JsonObject->SetStringField("group", group);
-
-
-
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetVariantsDataReceive);
 	Request->SetVerb("POST");
-	Request->SetURL(URL);
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
 	Request->ProcessRequest();
-*/
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
 
 }
 

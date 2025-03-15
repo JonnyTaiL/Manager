@@ -47,16 +47,21 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 		// Сделать появление строки ошибок при ее выводе
 	}
 	else {
-		FString Login = TB_Login->TB_TextBox->GetText().ToString();
-		FString Password = TB_Password->TB_TextBox->GetText().ToString();
-
+		FString OutputString;
 		FString URL = "http://26.76.184.253:8000/checkuserdata";
-		URL = URL + "?login=" + Login + "&password=" + Password;
+
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+		JsonObject->SetStringField("login", TB_Login->TB_TextBox->GetText().ToString());
+		JsonObject->SetStringField("password", TB_Password->TB_TextBox->GetText().ToString());
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
 		TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 		Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
-		Request->SetVerb("GET");
+		Request->SetVerb("POST");
 		Request->SetURL(URL);
+		Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+		Request->SetContentAsString(OutputString);
 		Request->ProcessRequest();
 	}
 }
