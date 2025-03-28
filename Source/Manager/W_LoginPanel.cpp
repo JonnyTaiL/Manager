@@ -159,6 +159,10 @@ void UW_LoginPanel::GetPermissionsSend()
 	Request->ProcessRequest();
 }
 
+
+
+
+// POST
 void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	/*

@@ -31,7 +31,16 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UScrollBox* SCROLL_TestsVariants;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	//UScrollBox* SCROLL_Groups;
 
+
+	//  Change To Scrollbox !!!!!!!!
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_Group;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_TextBox_Default* TB_VarName;
 	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	//UW_TextBox_Default* TB_CustomAnswer;
 
@@ -47,6 +56,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FTestDataArrayStruct> TestDataArray;
+
+
+	TArray<FString> GroupsArray;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FTestDataArrayStruct> Questions;
 
 	//UPROPERTY(BlueprintReadWrite)
 	//FString Depr_CorrectAnswer;
@@ -73,10 +88,26 @@ public:
 	void GetCompletedVariantsDataSend(FString Id);
 	void GetCompletedVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	//UFUNCTION(BlueprintCallable)
+	//void QuestionSend(FString UserAnswer, FString CorrectAnswer);
+	//void QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
 	UFUNCTION(BlueprintCallable)
-	void QuestionSend(FString UserAnswer, FString CorrectAnswer);
-	void QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void CreateVariantSend(FString Name, FString Group);
+	//void CreateVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
-	
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllQuestionsSend(FString Id);
+	void GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateQuestionsSend(FString Id);
+	void UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+
+	//
+
+
 };
