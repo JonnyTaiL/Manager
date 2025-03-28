@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Manager/W_Button_Default.h"
 #include "Manager/ManagerTypes.h"
+#include "HTTPModule.h"
+
 
 #include "W_TestsSlot.generated.h"
 
@@ -22,6 +24,7 @@ class MANAGER_API UW_TestsSlot : public UUserWidget
 
 public:
 
+
 	// WIDGET BINDING //
 
 
@@ -29,9 +32,20 @@ public:
 	UW_Button_Default* BTN_SelectTest;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_Button_Default* BTN_EditTest;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UW_Button_Default* BTN_DeleteTest;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	EPermissionType AccessLevel;
 
+	// Variables //
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	FString TestId;
+
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteVariantSend(FString m_TestId, FString m_QuestionId);
+	void DeleteVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	
 };
