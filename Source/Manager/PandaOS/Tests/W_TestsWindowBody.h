@@ -103,7 +103,7 @@ public:
 	void GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateQuestionsSend(FString Id);
+	void UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> Array);
 	void UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
