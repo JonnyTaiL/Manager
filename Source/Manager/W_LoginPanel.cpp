@@ -12,6 +12,9 @@
 //#include "Components/WidgetSwitcher.h"
 //#include "Components/TextBlock.h"
 
+
+
+
 void UW_LoginPanel::NativeConstruct()
 {
 	BTN_Enter->OnDefaultButtonClicked.AddDynamic(this, &UW_LoginPanel::OnLoginButtonClicked);
@@ -224,6 +227,8 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 			IIHUDRequestData::Execute_SetUserData(Hud, UserID, login, name, surname, patronymic, permission, group);
 		}
 		
+
+		this->GetParent()->RemoveFromParent();
 		this->RemoveFromParent();
 
 
