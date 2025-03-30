@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Manager/Interfaces/IHUDRequestData.h"
 #include "Manager/ManagerHUD.h"
+#include "Manager/ManagerTypes.h"
 #include "Json.h"
 #include "Engine.h"
 
@@ -333,14 +334,59 @@ void UW_TestsWindowBody::GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpRe
 	}
 }
 
-void UW_TestsWindowBody::UpdateQuestionsSend(FString Id)
+void UW_TestsWindowBody::UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> Array)
 {
 	// ToDo 
+	//struct FTestDataArrayStruct Cargo[]; //Ð¡ÐžÐ—Ð”ÐÐ•Ðœ Ð˜ Ð—ÐÐŸÐžÐ›ÐÐ¯Ð•Ðœ ÐœÐÐ¡Ð¡Ð˜Ð’ Ð¡Ð¢Ð Ð£ÐšÐ¢Ð£Ð  Ð”Ð›Ð¯ Ð¢Ð•Ð¡Ð¢Ð
+	
+
+
+
+
+	FString OutputString; //Ð“ÐžÐ¢ÐžÐ’Ð˜Ðœ ÐŸÐ•Ð Ð•ÐœÐ•ÐÐÐ«Ð• Ð”Ð›Ð¯ Ð¡Ð•Ð Ð˜ÐÐ›Ð˜Ð—ÐÐ¦Ð˜Ð˜ JSON
+	FString StringToSend;
+
+	TSharedPtr<FJsonObject> JsonToSend = MakeShareable(new FJsonObject()); //JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð
+	TArray<TSharedPtr<FJsonValue>> JsonArray; //ÐœÐÐ¡Ð¡Ð˜Ð’ JSON Ð”Ð›Ð¯ ÐœÐÐ¡Ð¡Ð˜Ð’Ð Ð¡Ð¢Ð Ð£ÐšÐ¢Ð£Ð  Ð’ÐžÐŸÐ ÐžÐ¡ÐžÐ’
+
+	for (int i = 0; i <= (Array.Num() - 1); i++) { //ÐŸÐ ÐžÐ¡Ð¢ÐžÐ™ ÐŸÐ•Ð Ð•Ð‘ÐžÐ  Ð¡Ð¢ÐÐ¢Ð˜Ð§Ð•Ð¡ÐšÐžÐ“Ðž ÐœÐÐ¡Ð¡Ð˜Ð’Ð, Ð¡ÐžÐ—Ð”ÐÐÐ˜Ð• Ð˜ Ð—ÐÐŸÐžÐ›ÐÐ•ÐÐ˜Ð¯ ÐžÐ‘ÐªÐ•ÐšÐ¢Ð JSON(ÐšÐÐ–Ð”Ð«Ð™ ÐžÐ¢Ð”Ð•Ð›Ð¬ÐÐ«Ð™ Ð’ÐžÐŸÐ ÐžÐ¡), Ð Ð¢ÐÐšÐ–Ð• Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• Ð­Ð¢ÐžÐ“Ðž ÐžÐ‘ÐªÐ•ÐšÐ¢Ð Ð’ ÐœÐÐ¡Ð¡Ð˜Ð’ JSONÐ¾Ð²
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+		JsonObject->SetStringField("question_text", Array[i].QuestionText);
+		JsonObject->SetNumberField("question_type", Array[i].QuestionType);
+		JsonObject->SetStringField("answer_1", Array[i].Answer_1);
+		JsonObject->SetStringField("answer_2", Array[i].Answer_2);
+		JsonObject->SetStringField("answer_3", Array[i].Answer_3);
+		JsonObject->SetStringField("answer_4", Array[i].Answer_4);
+		JsonObject->SetStringField("answer_correct", Array[i].CorrectAnswer);
+		JsonObject->SetNumberField("id_variant", FCString::Atoi(*Id));
+
+		JsonArray.Add(MakeShareable(new FJsonValueObject(JsonObject)));
+	}
+
+	JsonToSend->SetNumberField("variant_id", 8); //Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ÐŸÐžÐ›Ð¯ Ð’ÐÐ Ð˜ÐÐÐ¢Ð Ð’ JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð (ÐÐÐ”Ðž ÐŸÐžÐœÐ•ÐÐ¯Ð¢Ð¬ ÐÐ ÐŸÐ•Ð Ð•ÐœÐ•ÐÐÐ£Ð®, Ð ÐÐ• ÐÐ Ð¡Ð¢ÐÐ¢Ð˜Ð§Ð•Ð¡ÐšÐžÐ• Ð—ÐÐÐ§Ð•ÐÐ˜Ð• 8)
+	JsonToSend->SetArrayField("items", JsonArray); //Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ÐœÐÐ¡Ð¡Ð˜Ð’Ð JSON Ð’ JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð
+
+	TSharedRef<TJsonWriter<>> Writer2 = TJsonWriterFactory<>::Create(&StringToSend); //Ð‘Ð›Ð Ð‘Ð›Ð Ð‘Ð›Ð, Ð”ÐÐ›Ð•Ð• Ð’Ð¡Ð• ÐšÐÐš Ð˜ Ð ÐÐÐ¬Ð¨Ð•
+	FJsonSerializer::Serialize(JsonToSend.ToSharedRef(), Writer2);
+
+	FString URL = "http://26.76.184.253:8000/updatevariantquestions";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateQuestionsReceive);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(StringToSend);
+	Request->ProcessRequest();
 }
 
 void UW_TestsWindowBody::UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	// ToDo
+	FString answer = Response->GetContentAsString();
+	if (answer.Equals("1"))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, TEXT("Successfuly updated"));
+	}
 }
 
 
