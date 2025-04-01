@@ -88,9 +88,9 @@ public:
 	void GetCompletedVariantsDataSend(FString Id);
 	void GetCompletedVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-	//UFUNCTION(BlueprintCallable)
-	//void QuestionSend(FString UserAnswer, FString CorrectAnswer);
-	//void QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	UFUNCTION(BlueprintCallable)
+	void QuestionSend(FString UserAnswer, FString CorrectAnswer);
+	void QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
 	void CreateVariantSend(FString Name, FString Group);

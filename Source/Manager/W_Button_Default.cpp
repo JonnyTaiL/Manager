@@ -12,5 +12,5 @@ void UW_Button_Default::NativeConstruct()
 
 void UW_Button_Default::Event_OnButtonClicked_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ButtonClicked_CPP"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ButtonClicked_CPP"));
 }
