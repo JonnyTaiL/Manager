@@ -451,7 +451,7 @@ void UW_TestsWindowBody::UpdateQuestionsSend(FString Id, TArray<FTestDataArraySt
 		JsonArray.Add(MakeShareable(new FJsonValueObject(JsonObject)));
 	}
 
-	JsonToSend->SetNumberField("variant_id", 8); //Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ÐŸÐžÐ›Ð¯ Ð’ÐÐ Ð˜ÐÐÐ¢Ð Ð’ JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð (ÐÐÐ”Ðž ÐŸÐžÐœÐ•ÐÐ¯Ð¢Ð¬ ÐÐ ÐŸÐ•Ð Ð•ÐœÐ•ÐÐÐ£Ð®, Ð ÐÐ• ÐÐ Ð¡Ð¢ÐÐ¢Ð˜Ð§Ð•Ð¡ÐšÐžÐ• Ð—ÐÐÐ§Ð•ÐÐ˜Ð• 8)
+	JsonToSend->SetNumberField("variant_id", FCString::Atoi(*Id)); //Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ÐŸÐžÐ›Ð¯ Ð’ÐÐ Ð˜ÐÐÐ¢Ð Ð’ JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð (ÐÐÐ”Ðž ÐŸÐžÐœÐ•ÐÐ¯Ð¢Ð¬ ÐÐ ÐŸÐ•Ð Ð•ÐœÐ•ÐÐÐ£Ð®, Ð ÐÐ• ÐÐ Ð¡Ð¢ÐÐ¢Ð˜Ð§Ð•Ð¡ÐšÐžÐ• Ð—ÐÐÐ§Ð•ÐÐ˜Ð• 8)
 	JsonToSend->SetArrayField("items", JsonArray); //Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ÐœÐÐ¡Ð¡Ð˜Ð’Ð JSON Ð’ JSON ÐšÐžÐ¢ÐžÐ Ð«Ð™ Ð‘Ð£Ð”Ð•Ð¢ ÐžÐ¢ÐŸÐ ÐÐ’Ð›Ð•Ð
 
 	TSharedRef<TJsonWriter<>> Writer2 = TJsonWriterFactory<>::Create(&StringToSend); //Ð‘Ð›Ð Ð‘Ð›Ð Ð‘Ð›Ð, Ð”ÐÐ›Ð•Ð• Ð’Ð¡Ð• ÐšÐÐš Ð˜ Ð ÐÐÐ¬Ð¨Ð•
