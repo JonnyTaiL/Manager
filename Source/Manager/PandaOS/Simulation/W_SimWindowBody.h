@@ -25,6 +25,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> SimArrayIds;
+
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> CompletedSimArrayIds;
 

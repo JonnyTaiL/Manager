@@ -4,40 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Manager/W_Button_Default.h"
 #include "Manager/ManagerTypes.h"
-#include "HTTPModule.h"
 
-
-#include "W_TestsSlot.generated.h"
+#include "W_SimSlot.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MANAGER_API UW_TestsSlot : public UUserWidget
+class MANAGER_API UW_SimSlot : public UUserWidget
 {
 	GENERATED_BODY()
+	
 
 	virtual void NativeConstruct();
 
-
 public:
 
-
-	// WIDGET BINDING //
-
-
+	// WidgetBinding //
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UW_Button_Default* BTN_SelectTest;
+	class UW_Button_Default* BTN_SelectTest;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UW_Button_Default* BTN_EditTest;
+	class UW_Button_Default* BTN_EditTest;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UW_Button_Default* BTN_DeleteTest;
+	class UW_Button_Default* BTN_DeleteTest;
 
 
 	// Variables //
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPermissionType AccessLevel;
@@ -45,9 +38,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	FString TestId;
 
-
-	UFUNCTION(BlueprintCallable)
-	void DeleteVariantSend(FString m_TestId, FString m_QuestionId);
-	void DeleteVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-	
 };
