@@ -228,11 +228,10 @@ void UW_TestsWindowBody::QuestionSend(FString UserAnswer, FString CorrectAnswer)
 {
 	
 		FString OutputString;
-		FString Content = "You have been given the perfect answer to the question and the answer given by the student. Evaluate on a scale from 0 to 5 points how much the student's answer matches the meaning of the ideal answer. The ideal answer:" + CorrectAnswer + "." + "The student's answer: " + UserAnswer + ". Give the answer in the form of a character - from 0 to 5.";
+		//FString Content = "You have been given the perfect answer to the question and the answer given by the student. Evaluate on a scale from 0 to 5 points how much the student's answer matches the meaning of the ideal answer. The ideal answer:" + CorrectAnswer + "." + "The student's answer: " + UserAnswer + ". Give the answer in the form of a character - from 0 to 5.";
 		//TB_Answer->SetText(FText::FromString("Wait"));
-		FString URL = "http://26.76.184.253:1234/v1/chat/completions";
 
-		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+		/*TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject()); //ЭТОТ КОД БЫЛ НУЖЕН ДЛЯ ПОДКЛЮЧЕНИЯ К LMSTUDIO
 		JsonObject->SetStringField("model", "gemma-3-4b-it");
 
 		TArray<TSharedPtr<FJsonValue>> MessagesArray;
@@ -250,15 +249,22 @@ void UW_TestsWindowBody::QuestionSend(FString UserAnswer, FString CorrectAnswer)
 
 		JsonObject->SetNumberField("temperature", 0);
 		JsonObject->SetNumberField("max_tokens", -1);
-		JsonObject->SetBoolField("stream", false);
+		JsonObject->SetBoolField("stream", false);*/
 
+		/*FString URL = "http://26.76.184.253:8001/ask_question"; // КОД ДЛЯ ПОДКЛЮЧЕНИЯ К СВОЕМУ СЕРВЕРУ НА PYTHONы
 
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+		JsonObject->SetStringField("prompt", Content);
+		JsonObject->SetNumberField("temperature", 0);
+		JsonObject->SetNumberField("max_tokens", 2);
 
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);*/
 
-
-
-
-
+		FString URL = "http://26.76.184.253:8001/compare_answers";
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+		JsonObject->SetStringField("UserAnswer", UserAnswer);
+		JsonObject->SetStringField("CorrectAnswer", CorrectAnswer);
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
@@ -269,45 +275,13 @@ void UW_TestsWindowBody::QuestionSend(FString UserAnswer, FString CorrectAnswer)
 		Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 		Request->SetContentAsString(OutputString);
 		Request->ProcessRequest();
-
-
-	
-
 }
 
 void UW_TestsWindowBody::QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	FString answer = Response->GetContentAsString();
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(answer);
-
-	FJsonSerializer::Deserialize(JsonReader, JsonObject);
-	const TArray<TSharedPtr<FJsonValue>>* ChoicesArray;
-	JsonObject->TryGetArrayField(TEXT("choices"), ChoicesArray);
-	const TSharedPtr<FJsonValue>& FirstChoiceValue = (*ChoicesArray)[0];
-	const TSharedPtr<FJsonObject>* ChoiceObject;
-	if (FirstChoiceValue->TryGetObject(ChoiceObject))
-	{
-		const TSharedPtr<FJsonObject>* MessageObject;
-		if ((*ChoiceObject)->TryGetObjectField(TEXT("message"), MessageObject))
-		{
-			FString Content;
-			if ((*MessageObject)->TryGetStringField(TEXT("content"), Content))
-			{
-
-
-				//  TB_Answer->SetText(FText::FromString(""));
-				//TB_Answer->SetText(FText::FromString(Content));
-				AnswerRating = Content;
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, Content);
-			   // UE_LOG(LogTemp, Log, TEXT("Content: %s"), *Content);
-			}
-		}
-
-
-	}
+	AnswerRating = answer;
 }
-
 
 
 void UW_TestsWindowBody::CreateVariantSend(FString Name, FString Group)
