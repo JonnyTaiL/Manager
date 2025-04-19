@@ -29,8 +29,13 @@ public:
 	// WIDGETS BINDING //
 
 	
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UScrollBox* SCROLL_TestsVariants;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	//UScrollBox* SCROLL_TestsVariants;
+
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	//class U* SCROLL_TestsVariants;
+
+
 	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	//UScrollBox* SCROLL_Groups;
 
