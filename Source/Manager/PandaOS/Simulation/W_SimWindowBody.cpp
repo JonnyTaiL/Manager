@@ -77,3 +77,115 @@ void UW_SimWindowBody::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpRes
 		counter++;
 	}
 }
+
+void UW_SimWindowBody::CreateEmptyUsVariantSend(FString m_VariantName, FString m_Group)
+{
+	AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
+	AManagerHUD* MHud = Cast<AManagerHUD>(Hud);
+
+	FString group = m_Group;
+	FString VariantName = m_VariantName;
+	
+	FString URL = "http://26.76.184.253:8000/createemptyusvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("group", group);
+	JsonObject->SetStringField("usvariant_name", VariantName);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUsVariantsReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
+}
+
+void UW_SimWindowBody::CreateEmptyUsVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //������� JSON ������ �������
+	//TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+
+
+
+	FString callback_message = answer;
+
+		
+
+	if (callback_message == "1")
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Add Simulation Variant - Success"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Add Simulation Variant - Error"));
+	}
+	
+}
+
+void UW_SimWindowBody::DeleteVariantSend(int32 m_Var_ID)
+{
+	AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
+	AManagerHUD* MHud = Cast<AManagerHUD>(Hud);
+
+	uint32 Variant_ID = m_Var_ID;
+
+
+	FString URL = "http://26.76.184.253:8000/deleteusvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("usvariant_id", Variant_ID);
+	//JsonObject->SetStringField("usvariant_name", VariantName);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUsVariantsReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(Variant_ID));
+}
+
+void UW_SimWindowBody::DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //������� JSON ������ �������
+	//TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+
+
+
+	FString callback_message = answer;
+
+
+
+	if (callback_message == "1")
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Delete Simulation Variant - Success"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Delete Simulation Variant - Error"));
+	}
+	
+}
