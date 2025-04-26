@@ -40,7 +40,14 @@ public:
 	void GetAllUsVariantsSend();
 	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateEmptyUsVariantSend(FString m_VariantName, FString m_Group);
+	void CreateEmptyUsVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteVariantSend(int32 m_Var_ID);
+	void DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
 };
