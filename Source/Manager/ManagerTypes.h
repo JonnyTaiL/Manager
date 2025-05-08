@@ -81,3 +81,142 @@ struct FTestDataArrayStruct
 
 
 };
+
+
+USTRUCT(BlueprintType)
+struct FModifierData
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+
+};
+
+
+UENUM(BlueprintType)
+enum class EProficiencies : uint8
+{
+	Modeling = 0 UMETA(DisplayName = "Modeling"),
+	Art = 1 UMETA(DisplayName = "Art"),
+	Code = 2 UMETA(DisplayName = "Code")
+
+};
+
+
+USTRUCT(BlueprintType)
+struct FProficiency
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Modeling = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Art = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Code = 0.0f;
+
+};
+
+USTRUCT(BlueprintType)
+struct FProficiencyRequare
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Modeling = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Art = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Code = false;
+
+};
+
+
+
+USTRUCT(BlueprintType)
+struct FEmployeeData
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* Thumbnail;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxHours;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxTasks;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FProficiency Proficiency;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FModifierData> Buffs;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FModifierData> Debuffs;
+
+
+};
+
+
+USTRUCT(BlueprintType)
+struct FUSData
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Complexity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Hours;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> DoBefore;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> ChildUS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> ParentUS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FProficiencyRequare Proficiencies;
+
+};
+
+USTRUCT(BlueprintType)
+struct FSimVariantData
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Days;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Sprints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Group_ID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FEmployeeData> Employees;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FUSData> UserStories;
+
+};
+
