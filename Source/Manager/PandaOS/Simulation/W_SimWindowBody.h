@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "HTTPModule.h"
+#include "Manager/ManagerTypes.h"
 
 #include "W_SimWindowBody.generated.h"
 
@@ -33,6 +34,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, FString> SimVariantIds;
 
+	UPROPERTY(BlueprintReadWrite)
+	FSimVariantData SimVariantData;
 
 
 	// FUNCTIONS //
@@ -48,6 +51,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeleteVariantSend(int32 m_Var_ID);
 	void DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+
+	UFUNCTION(BlueprintCallable)
+	void GetVariantDataSend(int32 m_Var_ID);
+	void GetVariantDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
 };
