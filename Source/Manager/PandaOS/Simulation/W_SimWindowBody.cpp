@@ -340,7 +340,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					FUSData USData;
 
 					int32 US_ID = StoryObj->GetIntegerField("us_id");
-					FString US_Descrioption = StoryObj->GetStringField("us_description");
+					FString US_Description = StoryObj->GetStringField("us_description");
 					int32 US_Complexity = StoryObj->GetIntegerField("us_compexity");
 					int32 US_Hours = StoryObj->GetIntegerField("us_hours");
 
@@ -351,7 +351,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					{
 						for (const TSharedPtr<FJsonValue>& Value : *DoBeforeArray)
 						{
-							int32 ID = Value->AsNumber(); // or .AsInteger() if using UE 5.3+
+							int32 ID = Value->AsNumber(); 
 							USData.DoBefore.Add(ID);
 						}
 					}
@@ -381,7 +381,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					bool US_Code = StoryObj->GetBoolField("Code");
 
 					USData.ID = US_ID;
-					USData.Description = US_Descrioption;
+					USData.Description = US_Description;
 					USData.Complexity = US_Complexity;
 					USData.Hours = US_Hours;
 					USData.Proficiencies.Modeling = US_3D;

@@ -35,4 +35,8 @@ public:
 	UTextBlock* TXT_Group;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* TXT_AccessLevel;
+
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateInfo();
 };
