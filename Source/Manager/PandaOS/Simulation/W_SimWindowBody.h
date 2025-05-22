@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HTTPModule.h"
 #include "Manager/ManagerTypes.h"
+#include "Manager/PandaOS/WindowBodyMaster.h"
 
 #include "W_SimWindowBody.generated.h"
 
@@ -13,7 +14,7 @@
  * 
  */
 UCLASS()
-class MANAGER_API UW_SimWindowBody : public UUserWidget
+class MANAGER_API UW_SimWindowBody : public UWindowBodyMaster
 {
 	GENERATED_BODY()
 	

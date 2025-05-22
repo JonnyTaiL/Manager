@@ -10,6 +10,7 @@
 #include "HTTPModule.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Manager/ManagerTypes.h"
+#include "Manager/PandaOS/WindowBodyMaster.h"
 
 #include "W_TestsWindowBody.generated.h"
 
@@ -17,7 +18,7 @@
  * 
  */
 UCLASS()
-class MANAGER_API UW_TestsWindowBody : public UUserWidget
+class MANAGER_API UW_TestsWindowBody : public UWindowBodyMaster
 {
 	GENERATED_BODY()
 
