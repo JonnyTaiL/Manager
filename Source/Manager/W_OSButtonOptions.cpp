@@ -16,3 +16,12 @@ void UW_OSButtonOptions::NativeConstruct()
 	TXT_Group->SetText(FText::FromString(UserData.GroupName));
 	TXT_AccessLevel->SetText(UEnum::GetDisplayValueAsText(UserData.PermissionType));
 }
+
+void UW_OSButtonOptions::UpdateInfo()
+{
+	AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
+	FManagerUserData UserData = Cast<IIHUDRequestData>(Hud)->GetUserData_Implementation();
+	TXT_Name->SetText(FText::FromString(UserData.Name));
+	TXT_Group->SetText(FText::FromString(UserData.GroupName));
+	TXT_AccessLevel->SetText(UEnum::GetDisplayValueAsText(UserData.PermissionType));
+}

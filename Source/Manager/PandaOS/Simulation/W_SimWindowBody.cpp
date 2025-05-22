@@ -215,30 +215,24 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 	SimVariantData.Employees.Empty();
 	SimVariantData.UserStories.Empty();
 
-	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 	FString answer = Response->GetContentAsString();
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
 
 	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //������� JSON ������ �������
-	//TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
-	FJsonSerializer::Deserialize(JsonReader, JsonArray);
 
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%s"), *answer));
 
-	//FSimVariantData SimVariantData;
+	//FFileHelper::SaveStringToFile(*answer, *FString("C:/file.txt"));
 
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%s"), *answer));
-
-	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		TSharedPtr<FJsonObject> JsonObject = JsonValue->AsObject();
-
-		if (!JsonObject.IsValid()) continue;
 
 
 		int32 Var_ID = JsonObject->GetIntegerField("usvariant_id");
 		FString Var_Name = JsonObject->GetStringField("name");
 		int32 Var_Days = JsonObject->GetIntegerField("days");
 		int32 Var_Sprints = JsonObject->GetIntegerField("sprints");
+
 
 		SimVariantData.ID = Var_ID;
 		SimVariantData.Name = Var_Name;
@@ -247,7 +241,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%s"), *Var_Name));
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "BRUH");
+
 	
 
 
@@ -346,7 +340,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					FUSData USData;
 
 					int32 US_ID = StoryObj->GetIntegerField("us_id");
-					FString US_Descrioption = StoryObj->GetStringField("us_description");
+					FString US_Description = StoryObj->GetStringField("us_description");
 					int32 US_Complexity = StoryObj->GetIntegerField("us_compexity");
 					int32 US_Hours = StoryObj->GetIntegerField("us_hours");
 
@@ -357,7 +351,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					{
 						for (const TSharedPtr<FJsonValue>& Value : *DoBeforeArray)
 						{
-							int32 ID = Value->AsNumber(); // or .AsInteger() if using UE 5.3+
+							int32 ID = Value->AsNumber(); 
 							USData.DoBefore.Add(ID);
 						}
 					}
@@ -387,7 +381,7 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					bool US_Code = StoryObj->GetBoolField("Code");
 
 					USData.ID = US_ID;
-					USData.Description = US_Descrioption;
+					USData.Description = US_Description;
 					USData.Complexity = US_Complexity;
 					USData.Hours = US_Hours;
 					USData.Proficiencies.Modeling = US_3D;
