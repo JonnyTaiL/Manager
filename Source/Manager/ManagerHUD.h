@@ -6,7 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "Interfaces/IHUDRequestData.h"
 #include "Interfaces/IHttpResponse.h"
-//#include "ManagerTypes.h"
+#include "ManagerTypes.h"
 #include "HTTPModule.h"
 #include "ManagerHUD.generated.h"
 
@@ -15,6 +15,14 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestGenerated, const FGeneratedTestStruct&, TestStruct);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
+
+
+
+
+
 UCLASS()
 class MANAGER_API AManagerHUD : public AHUD, public IIHUDRequestData
 {
@@ -51,6 +59,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> GroupsArray;
 
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnTestGenerated OnTestGenerated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnEmployeeAdded OnEmployeeAdded_Callback;
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FManagerUserData GetUserData();
 	virtual FManagerUserData GetUserData_Implementation() override;
@@ -59,15 +73,14 @@ public:
 	void SetUserData(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName);
 	virtual void SetUserData_Implementation(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName) override;
 	
-	//UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	//TArray<FString> GetGroups();
-	//virtual TArray<FString> GetGroups_Implementation() override;
 
-	//UFUNCTION(BlueprintCallable)
-	//void GetGroupsSend();
-	//void GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	UFUNCTION(BlueprintCallable)
+	void GenerateTestQuestionSend();
+	void GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-
+	UFUNCTION(BlueprintCallable)
+	void AddEmployeeSend();
+	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
 };

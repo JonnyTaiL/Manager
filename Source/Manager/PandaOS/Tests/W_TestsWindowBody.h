@@ -17,6 +17,17 @@
 /**
  * 
  */
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantDataReceived, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionReceiced, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAllQuestionsReveived, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionsUpdated, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantCreated, bool, Success);
+
+
 UCLASS()
 class MANAGER_API UW_TestsWindowBody : public UWindowBodyMaster
 {
@@ -26,6 +37,28 @@ class MANAGER_API UW_TestsWindowBody : public UWindowBodyMaster
 	virtual void NativeConstruct();
 
 public:
+
+	// Delegates //
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnVariantDataReceived FOnVariantDataReceived_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnTestDataArrayReceived FOnTestDataArrayReceived_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnCompletedVariantsReceived FOnCompletedVariantsReceived_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnQuestionReceiced FOnQuestionReceiced_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnAllQuestionsReveived FOnAllQuestionsReveived_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnQuestionsUpdated FOnQuestionsUpdated_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnVariantCreated FOnVariantCreated_Callback;
 
 	// WIDGETS BINDING //
 
@@ -100,7 +133,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateVariantSend(FString Name, FString Group);
-	//void CreateVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void CreateVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
 

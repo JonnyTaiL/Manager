@@ -82,6 +82,30 @@ struct FTestDataArrayStruct
 
 };
 
+USTRUCT(BlueprintType)
+struct FGeneratedTestStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 QuestionType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString QuestionText;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString CorrectAnswer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer_4;
+
+
+
+
+
+};
+
 
 USTRUCT(BlueprintType)
 struct FModifierData
@@ -159,6 +183,8 @@ struct FEmployeeData
 	int32 MaxHours;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxTasks;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Skill;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FProficiency Proficiency;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
