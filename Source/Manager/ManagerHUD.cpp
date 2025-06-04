@@ -165,7 +165,7 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	}
 }
 
-void AManagerHUD::GetAllUsVariantsSend()
+void AManagerHUD::GetAllUsVariantsSend()// Код Максима
 {
 	FString group = GroupName;
 	uint32 user_id = UserID;
@@ -187,9 +187,9 @@ void AManagerHUD::GetAllUsVariantsSend()
 	Request->SetURL(URL);
 	Request->ProcessRequest();
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
-}
+}// Код Максима
 
-void AManagerHUD::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+void AManagerHUD::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)// Код Максима
 {
 
 	TArray<FString> SimArrayIds;
@@ -230,4 +230,4 @@ void AManagerHUD::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponse
 	{
 		OnAllUSVariantsGot_Callback.Broadcast(false, SimArrayIds, CompletedSimArrayIds);
 	}
-}
+}// Код Максима
