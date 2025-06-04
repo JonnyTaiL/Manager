@@ -23,8 +23,6 @@ public:
 
 
 
-	// Variables //
-
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> SimArrayIds;
 
@@ -40,10 +38,6 @@ public:
 
 
 	// FUNCTIONS //
-	UFUNCTION(BlueprintCallable)
-	void GetAllUsVariantsSend();
-	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-
 	UFUNCTION(BlueprintCallable)
 	void CreateEmptyUsVariantSend(FString m_VariantName, FString m_Group);
 	void CreateEmptyUsVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
