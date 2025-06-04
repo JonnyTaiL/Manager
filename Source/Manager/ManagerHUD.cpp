@@ -4,6 +4,14 @@
 #include "ManagerHUD.h"
 //#include "ManagerTypes.h"
 
+
+
+
+
+
+
+
+
 void AManagerHUD::NativeConstruct()
 {
 	//GetGroupsSend();
@@ -165,45 +173,60 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	}
 }
 
+void AManagerHUD::GetVariantsDataSend()
+{
+
+	FString group = GroupName;
 
 
+	FString URL = "http://26.76.184.253:8000/getvariantsdata";
+	FString OutputString;
 
-//TArray<FString> AManagerHUD::GetGroups()
-//{
-//	return GroupsArray;
-//}
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("group", group);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetVariantsDataReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetURL(URL);
+	Request->SetContentAsString(OutputString);
+	Request->ProcessRequest();
+
+	
+}
+
+void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	TArray<FString> TestsArrayIds;
+	
+
+	if (bWasSuccessful)
+	{
+		TArray<TSharedPtr<FJsonValue>> JsonArray;
+		FString answer = Response->GetContentAsString();
+
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+		FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+		{
+
+			TestsArrayIds.Add(JsonValue->AsString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+		}
+
+		FOnVariantsIdsReceived_Callback.Broadcast(true, TestsArrayIds);
+	}
+	else
+	{
+		FOnVariantsIdsReceived_Callback.Broadcast(false, TestsArrayIds);
+	}
 
 
-//void AManagerHUD::GetGroupsSend()
-//{
-//	//Отправка запроса на получение групп массивом строк
-//
-//	FString URL = "http://26.76.184.253:8000/getgroupsdata";
-//	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-//	Request->OnProcessRequestComplete().BindUObject(this, AManagerHUD::GetGroupsReceive);
-//	Request->SetVerb("GET");
-//	Request->SetURL(URL);
-//	Request->ProcessRequest();
-//}
-//
-//void AManagerHUD::GetGroupsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) // Получение и обработка массива строк групп
-//{
-//	TArray<FString> StringArray;
-//
-//	GroupsArray.Empty();
-//
-//	TArray<TSharedPtr<FJsonValue>> JsonArray;
-//	FString answer = Response->GetContentAsString();
-//
-//	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ПАРСИНГ JSON ОТВЕТА Массива
-//	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
-//	FJsonSerializer::Deserialize(JsonReader, JsonArray);
-//
-//	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
-//	{
-//		if (JsonValue->Type == EJson::String)
-//		{
-//			GroupsArray.Add(JsonValue->AsString());
-//		}
-//	}
-//}
+}
+
