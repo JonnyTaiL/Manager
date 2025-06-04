@@ -20,7 +20,6 @@ void UW_TestsWindowBody::NativeConstruct()
 
 void UW_TestsWindowBody::GetVariantsDataSend()
 {
-
 	AHUD* Hud = UGameplayStatics::GetPlayerController(this, 0)->GetHUD();
 	AManagerHUD* MHud = Cast<AManagerHUD>(Hud);
 	FString group = MHud->GroupName;
@@ -44,12 +43,10 @@ void UW_TestsWindowBody::GetVariantsDataSend()
 		Request->ProcessRequest();
 
 	}
-
 }
 
 void UW_TestsWindowBody::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-
 	TestsArrayIds.Empty();
 
 	if (bWasSuccessful)
@@ -69,11 +66,11 @@ void UW_TestsWindowBody::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpRe
 
 		}
 
-		FOnVariantDataReceived_Callback.Broadcast(true);
+		//FOnVariantDataReceived_Callback.Broadcast(true);
 	}
 	else
 	{
-		FOnVariantDataReceived_Callback.Broadcast(false);
+		//FOnVariantDataReceived_Callback.Broadcast(false);
 	}
 	
 	
@@ -145,11 +142,11 @@ void UW_TestsWindowBody::GetTestDataArrayRecieve(FHttpRequestPtr Request, FHttpR
 			counter++;
 		}
 
-		FOnTestDataArrayReceived_Callback.Broadcast(true);
+//		FOnTestDataArrayReceived_Callback.Broadcast(true);
 	}
 	else
 	{
-		FOnTestDataArrayReceived_Callback.Broadcast(false);
+//		FOnTestDataArrayReceived_Callback.Broadcast(false);
 	}
 	
 }
@@ -230,13 +227,13 @@ void UW_TestsWindowBody::GetCompletedVariantsDataReceive(FHttpRequestPtr Request
 				CompletedTestsArrayIds.Add(JsonValue->AsString());
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, JsonValue->AsString());
 			}
-			FOnCompletedVariantsReceived_Callback.Broadcast(true);
+//			FOnCompletedVariantsReceived_Callback.Broadcast(true);
 		}
 
 	}
 	else
 	{
-		FOnCompletedVariantsReceived_Callback.Broadcast(false);
+//		FOnCompletedVariantsReceived_Callback.Broadcast(false);
 	}
 }
 
@@ -267,11 +264,11 @@ void UW_TestsWindowBody::QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr R
 	{
 		FString answer = Response->GetContentAsString();
 		AnswerRating = answer;
-		FOnQuestionReceiced_Callback.Broadcast(true);
+//		FOnQuestionReceiced_Callback.Broadcast(true);
 	}
 	else
 	{
-		FOnQuestionReceiced_Callback.Broadcast(false);
+//		FOnQuestionReceiced_Callback.Broadcast(false);
 	}
 
 }
@@ -309,7 +306,7 @@ void UW_TestsWindowBody::CreateVariantReceive(FHttpRequestPtr Request, FHttpResp
 	{
 		FString answer = Response->GetContentAsString();
 		AnswerRating = answer;
-		FOnVariantCreated_Callback.Broadcast(true);
+//		FOnVariantCreated_Callback.Broadcast(true);
 	}
 }
 
@@ -389,11 +386,11 @@ void UW_TestsWindowBody::GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpRe
 
 			counter++;
 		}
-		FOnAllQuestionsReveived_Callback.Broadcast(true);
+//		FOnAllQuestionsReveived_Callback.Broadcast(true);
 	}
 	else
 	{
-		FOnAllQuestionsReveived_Callback.Broadcast(false);
+//		FOnAllQuestionsReveived_Callback.Broadcast(false);
 	}
 	
 }
@@ -445,12 +442,12 @@ void UW_TestsWindowBody::UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpRe
 		if (answer.Equals("1"))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, TEXT("Successfuly updated"));
-			FOnQuestionsUpdated_Callback.Broadcast(true);
+//			FOnQuestionsUpdated_Callback.Broadcast(true);
 		}
 	}
 	else
 	{
-		FOnQuestionsUpdated_Callback.Broadcast(false);
+//		FOnQuestionsUpdated_Callback.Broadcast(false);
 	}
 
 }

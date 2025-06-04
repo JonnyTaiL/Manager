@@ -18,9 +18,18 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestGenerated, const FGeneratedTestStruct&, TestStruct);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// Код Максима
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// ГЉГ®Г¤ ГЊГ ГЄГ±ГЁГ¬Г 
 
+// ГЊГЋГ‰
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnVariantsIdsReceived, bool, Success, const TArray<FString>&, TestArrayIds);
+// ГЊГЋГ‰
 
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionReceiced, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAllQuestionsReveived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionsUpdated, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantCreated, bool, Success);
 
 
 
@@ -65,12 +74,20 @@ public:
 	FOnTestGenerated OnTestGenerated_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnEmployeeAdded OnEmployeeAdded_Callback;
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")// Код Максима
-	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;// Код Максима
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")// ГЉГ®Г¤ ГЊГ ГЄГ±ГЁГ¬Г 
+	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;// ГЉГ®Г¤ ГЊГ ГЄГ±ГЁГ¬Г 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FManagerUserData GetUserData();
 	virtual FManagerUserData GetUserData_Implementation() override;
+
+
+	//ГЊГЋГ‰
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnVariantsIdsReceived FOnVariantsIdsReceived_Callback;
+	//ГЊГЋГ‰
+
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetUserData(int32& m_UserID, FString& m_Login, FString& m_Name, FString& m_Surname, FString& m_Patronumic, EPermissionType& m_PermissionType, FString& m_GroupName);
@@ -85,7 +102,15 @@ public:
 	void AddEmployeeSend();
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-	UFUNCTION(BlueprintCallable) // Код Максима
+
+
+	UFUNCTION(BlueprintCallable)
+	void GetVariantsDataSend();
+	void GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+
+	UFUNCTION(BlueprintCallable)
 	void GetAllUsVariantsSend();
-	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);// Код Максима
+	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
 };

@@ -1,8 +1,16 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ManagerHUD.h"
 //#include "ManagerTypes.h"
+
+
+
+
+
+
+
+
 
 void AManagerHUD::NativeConstruct()
 {
@@ -165,7 +173,72 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	}
 }
 
-void AManagerHUD::GetAllUsVariantsSend()// Код Максима
+
+
+void AManagerHUD::GetVariantsDataSend()
+{
+
+	FString group = GroupName;
+
+
+
+
+
+	FString URL = "http://26.76.184.253:8000/getvariantsdata";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("group", group);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetVariantsDataReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetURL(URL);
+	Request->SetContentAsString(OutputString);
+	Request->ProcessRequest();
+
+	
+}
+
+
+
+void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	TArray<FString> TestsArrayIds;
+	
+
+	if (bWasSuccessful)
+	{
+		TArray<TSharedPtr<FJsonValue>> JsonArray;
+		FString answer = Response->GetContentAsString();
+
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+		FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+		{
+
+			TestsArrayIds.Add(JsonValue->AsString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+		}
+
+		FOnVariantsIdsReceived_Callback.Broadcast(true, TestsArrayIds);
+	}
+	else
+	{
+		FOnVariantsIdsReceived_Callback.Broadcast(false, TestsArrayIds);
+	}
+
+
+}
+
+
+  void AManagerHUD::GetAllUsVariantsSend()// Код Максима
 {
 	FString group = GroupName;
 	uint32 user_id = UserID;
@@ -173,12 +246,12 @@ void AManagerHUD::GetAllUsVariantsSend()// Код Максима
 	FString URL = "http://26.76.184.253:8000/getallusvariantsdata";
 	FString OutputString;
 
-	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+  TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 	JsonObject->SetStringField("group", group);
 	JsonObject->SetNumberField("user_id", user_id);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
-
+  
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUsVariantsReceive);
 	Request->SetVerb("POST");
@@ -231,3 +304,4 @@ void AManagerHUD::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponse
 		OnAllUSVariantsGot_Callback.Broadcast(false, SimArrayIds, CompletedSimArrayIds);
 	}
 }// Код Максима
+

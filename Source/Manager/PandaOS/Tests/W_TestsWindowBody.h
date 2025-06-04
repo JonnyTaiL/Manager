@@ -19,13 +19,13 @@
  */
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantDataReceived, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionReceiced, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAllQuestionsReveived, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionsUpdated, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantCreated, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantDataReceived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionReceiced, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAllQuestionsReveived, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionsUpdated, bool, Success);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariantCreated, bool, Success);
 
 
 UCLASS()
@@ -39,39 +39,30 @@ class MANAGER_API UW_TestsWindowBody : public UWindowBodyMaster
 public:
 
 	// Delegates //
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnVariantDataReceived FOnVariantDataReceived_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnVariantDataReceived FOnVariantDataReceived_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnTestDataArrayReceived FOnTestDataArrayReceived_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnTestDataArrayReceived FOnTestDataArrayReceived_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnCompletedVariantsReceived FOnCompletedVariantsReceived_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnCompletedVariantsReceived FOnCompletedVariantsReceived_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnQuestionReceiced FOnQuestionReceiced_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnQuestionReceiced FOnQuestionReceiced_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnAllQuestionsReveived FOnAllQuestionsReveived_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnAllQuestionsReveived FOnAllQuestionsReveived_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnQuestionsUpdated FOnQuestionsUpdated_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnQuestionsUpdated FOnQuestionsUpdated_Callback;
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnVariantCreated FOnVariantCreated_Callback;
+	//UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	//FOnVariantCreated FOnVariantCreated_Callback;
 
 	// WIDGETS BINDING //
 
 	
-	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	//UScrollBox* SCROLL_TestsVariants;
-
-	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	//class U* SCROLL_TestsVariants;
-
-
-	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	//UScrollBox* SCROLL_Groups;
 
 
 	//  Change To Scrollbox !!!!!!!!
@@ -80,8 +71,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UW_TextBox_Default* TB_VarName;
-	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	//UW_TextBox_Default* TB_CustomAnswer;
 
 
 
@@ -102,10 +91,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FTestDataArrayStruct> Questions;
 
-	//UPROPERTY(BlueprintReadWrite)
-	//FString Depr_CorrectAnswer;
-	//UPROPERTY(BlueprintReadWrite)
-	//FString Depr_UserAnswer;
 	UPROPERTY(BlueprintReadWrite)
 	FString AnswerRating = "/";
 
@@ -135,8 +120,6 @@ public:
 	void CreateVariantSend(FString Name, FString Group);
 	void CreateVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-
-
 	UFUNCTION(BlueprintCallable)
 	void GetAllQuestionsSend(FString Id);
 	void GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
@@ -144,9 +127,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> Array);
 	void UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-
-
-	//
 
 
 };
