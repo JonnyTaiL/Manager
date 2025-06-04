@@ -173,6 +173,7 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	}
 }
 
+//лни
 void AManagerHUD::GetVariantsDataSend()
 {
 
@@ -197,7 +198,9 @@ void AManagerHUD::GetVariantsDataSend()
 
 	
 }
+//лни
 
+//лни
 void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	TArray<FString> TestsArrayIds;
@@ -229,4 +232,4 @@ void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponseP
 
 
 }
-
+//лни
