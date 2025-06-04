@@ -145,7 +145,7 @@ void AManagerHUD::AddEmployeeSend()
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
-	// ������� ���������
+	// Выводим результат
 	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
 
 
@@ -173,11 +173,15 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	}
 }
 
-//���
+
+
 void AManagerHUD::GetVariantsDataSend()
 {
 
 	FString group = GroupName;
+
+
+
 
 
 	FString URL = "http://26.76.184.253:8000/getvariantsdata";
@@ -198,9 +202,9 @@ void AManagerHUD::GetVariantsDataSend()
 
 	
 }
-//���
 
-//���
+
+
 void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	TArray<FString> TestsArrayIds;
@@ -232,4 +236,72 @@ void AManagerHUD::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponseP
 
 
 }
-//���
+
+
+  void AManagerHUD::GetAllUsVariantsSend()// Код Максима
+{
+	FString group = GroupName;
+	uint32 user_id = UserID;
+
+	FString URL = "http://26.76.184.253:8000/getallusvariantsdata";
+	FString OutputString;
+
+  TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("group", group);
+	JsonObject->SetNumberField("user_id", user_id);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+  
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUsVariantsReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
+}// Код Максима
+
+void AManagerHUD::GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)// Код Максима
+{
+
+	TArray<FString> SimArrayIds;
+	TArray<FString> CompletedSimArrayIds;
+
+	TArray<TSharedPtr<FJsonValue>> JsonArray;
+	FString answer = Response->GetContentAsString();
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+	FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+	uint32 counter = 0;
+
+
+	for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+	{
+		TSharedPtr<FJsonObject> JsonObject = JsonValue->AsObject();
+		FString var_id = JsonObject->GetStringField("usvariant_id");
+		uint32 completed = JsonObject->GetNumberField("iscompleted_by_user");
+
+
+		SimArrayIds.Add(var_id);
+		if (completed == 1)
+		{
+			CompletedSimArrayIds.Add(var_id);
+		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 50.0f, FColor::Blue, SimArrayIds[counter]);
+
+		counter++;
+	}
+
+	if (bWasSuccessful)
+	{
+		OnAllUSVariantsGot_Callback.Broadcast(true, SimArrayIds, CompletedSimArrayIds);
+	}
+	else
+	{
+		OnAllUSVariantsGot_Callback.Broadcast(false, SimArrayIds, CompletedSimArrayIds);
+	}
+}// Код Максима
+

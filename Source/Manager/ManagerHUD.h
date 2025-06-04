@@ -18,10 +18,11 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestGenerated, const FGeneratedTestStruct&, TestStruct);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// Êîä Ìàêñèìà
 
-// ���
+// ÌÎÉ
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnVariantsIdsReceived, bool, Success, const TArray<FString>&, TestArrayIds);
-// ���
+// ÌÎÉ
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
@@ -73,16 +74,18 @@ public:
 	FOnTestGenerated OnTestGenerated_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnEmployeeAdded OnEmployeeAdded_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")// Êîä Ìàêñèìà
+	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;// Êîä Ìàêñèìà
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FManagerUserData GetUserData();
 	virtual FManagerUserData GetUserData_Implementation() override;
 
 
-	//���
+	//ÌÎÉ
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnVariantsIdsReceived FOnVariantsIdsReceived_Callback;
-	//���
+	//ÌÎÉ
 
 
 
@@ -99,9 +102,15 @@ public:
 	void AddEmployeeSend();
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-	//���
+
+
 	UFUNCTION(BlueprintCallable)
 	void GetVariantsDataSend();
 	void GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-	//���
+
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllUsVariantsSend();
+	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
 };
