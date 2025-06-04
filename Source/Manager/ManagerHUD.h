@@ -18,7 +18,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestGenerated, const FGeneratedTestStruct&, TestStruct);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// Код Максима
 
 
 
@@ -65,8 +65,8 @@ public:
 	FOnTestGenerated OnTestGenerated_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnEmployeeAdded OnEmployeeAdded_Callback;
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")// Код Максима
+	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;// Код Максима
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FManagerUserData GetUserData();
@@ -85,7 +85,7 @@ public:
 	void AddEmployeeSend();
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable) // Код Максима
 	void GetAllUsVariantsSend();
-	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);// Код Максима
 };
