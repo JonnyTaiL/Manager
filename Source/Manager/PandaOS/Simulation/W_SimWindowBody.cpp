@@ -6,6 +6,8 @@
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
 
+
+
 void UW_SimWindowBody::NativeConstruct()
 {
 	GetAllUsVariantsSend();
@@ -258,15 +260,16 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 
 
 					int32 EmployeeID = EmployeeObj->GetIntegerField("worker_id");
-					FString EmployeeName = EmployeeObj->GetStringField("worker_name");
+					FString Employee_Name = EmployeeObj->GetStringField("worker_name");
+					FString Employee_Description = EmployeeObj->GetStringField("worker_description");
 					int32 Employee_MaxHours = EmployeeObj->GetIntegerField("worker_maxhours");
-					int32 Employee_MaxTasks = EmployeeObj->GetIntegerField("worker_maxsp");
+					int32 Employee_MaxTasks = EmployeeObj->GetIntegerField("worker_maxtasks");
+					int32 Employee_Skill = EmployeeObj->GetIntegerField("worker_maxsp");
 					float Employee_Prof_3D = EmployeeObj->GetNumberField("worker_3D");
 					float Employee_Prof_2D = EmployeeObj->GetNumberField("worker_2D");
 					float Employee_Prof_Code = EmployeeObj->GetNumberField("worker_code");
 
-				
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Employee Added");
+
 
 					// Get Modifiers
 
@@ -313,9 +316,11 @@ void UW_SimWindowBody::GetVariantDataReceive(FHttpRequestPtr Request, FHttpRespo
 					}
 	
 					Employee.ID = EmployeeID;
-					Employee.Name = EmployeeName;
+					Employee.Name = Employee_Name;
+					Employee.Description = Employee_Description;
 					Employee.MaxHours = Employee_MaxHours;
 					Employee.MaxTasks = Employee_MaxTasks;
+					Employee.Skill = Employee_Skill;
 					Employee.Proficiency.Modeling = Employee_Prof_3D;
 					Employee.Proficiency.Art = Employee_Prof_2D;
 					Employee.Proficiency.Code = Employee_Prof_Code;
