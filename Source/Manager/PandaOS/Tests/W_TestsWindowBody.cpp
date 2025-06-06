@@ -331,7 +331,7 @@ void UW_TestsWindowBody::GetAllQuestionsSend(FString Id)
 
 void UW_TestsWindowBody::GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-
+//	TArray<FTestDataArrayStruct> Questions;
 	Questions.Empty();
 
 	if (bWasSuccessful)
@@ -386,7 +386,7 @@ void UW_TestsWindowBody::GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpRe
 
 			counter++;
 		}
-//		FOnAllQuestionsReveived_Callback.Broadcast(true);
+		//FOnAllQuestionsReceived_Callback.Broadcast(true, Questions);
 	}
 	else
 	{

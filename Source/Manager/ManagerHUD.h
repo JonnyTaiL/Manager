@@ -18,11 +18,22 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestGenerated, const FGeneratedTestStruct&, TestStruct);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAllUSVariantsGot, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// Êîä Ìàêñèìà
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSimVariantIdsReceived, bool, Success, const TArray<FString>&, SimArrayIds, const TArray<FString>&, CompletedSimArrayIds);// Êîä Ìàêñèìà
 
-// ÌÎÉ
+// 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnVariantsIdsReceived, bool, Success, const TArray<FString>&, TestArrayIds);
-// ÌÎÉ
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedTestVariantAdded, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCompletedTestVariantsIdsReceived, bool, Success, const TArray<FString>&, CompletedSimArrayIds);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnQuestionRated, bool, Success, const FString&, Answer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestVariantCreated, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAllQuestionsReceived, bool, Success, const TArray<FTestDataArrayStruct>&, Questions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionUpdated, bool, Success);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantCreated, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantDeleted, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSimVariantDataReceived, bool, Success, const FSimVariantData&, SimVariantData);
+
+// 
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompletedVariantsReceived, bool, Success);
@@ -68,24 +79,49 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> GroupsArray;
+	UPROPERTY(BlueprintReadWrite)
+	FSimVariantData SimVariantData;
 
 
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnTestGenerated OnTestGenerated_Callback;
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnEmployeeAdded OnEmployeeAdded_Callback;
-	UPROPERTY(BlueprintAssignable, Category = "Callbacks")// Êîä Ìàêñèìà
-	FOnAllUSVariantsGot OnAllUSVariantsGot_Callback;// Êîä Ìàêñèìà
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FManagerUserData GetUserData();
 	virtual FManagerUserData GetUserData_Implementation() override;
 
 
-	//ÌÎÉ
+	//
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnVariantsIdsReceived FOnVariantsIdsReceived_Callback;
-	//ÌÎÉ
+	FOnVariantsIdsReceived OnVariantsIdsReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnCompletedTestVariantAdded OnCompletedTestVariantAdded_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnCompletedTestVariantsIdsReceived OnCompletedVariantsIdsReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnQuestionRated OnQuestionRated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnTestVariantCreated OnTestVariantCreated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnAllQuestionsReceived OnAllQuestionsReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnQuestionUpdated OnQuestionUpdated_Callback;
+
+
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnTestGenerated OnTestGenerated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnEmployeeAdded OnEmployeeAdded_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnSimVariantIdsReceived OnSimVariantIdsReceived_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnSimVariantCreated OnSimVariantCreated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnSimVariantDeleted OnSimVariantDeleted_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnSimVariantDataReceived OnSimVariantDataReceived_Callback;
+	//
 
 
 
@@ -103,14 +139,57 @@ public:
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
+	// TESTS //
 
 	UFUNCTION(BlueprintCallable)
-	void GetVariantsDataSend();
-	void GetVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-
+	void GetTestVariantsDataSend();
+	void GetTestVariantsDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void GetAllUsVariantsSend();
-	void GetAllUsVariantsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void AddCompletedTestVariantSend(int32 m_UserId, int32 m_VarID, int32 m_Score);
+	void AddCompleteTestVariantRecieve(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void GetCompletedTestVariantsIdsSend(FString Id);
+	void GetCompletedTestVariantsIdsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void RateCustomAnswerSend(FString UserAnswer, FString CorrectAnswer);
+	void RateCustomAnswerReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateTestVariantSend(FString m_Name, FString m_Group);
+	void CreateTestVariantReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllQuestionsSend(FString Id);
+	void GetAllQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> Array);
+	void UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+
+
+	// SIMULATION //
+
+	UFUNCTION(BlueprintCallable)
+	void GetSimVariantsIdsSend();
+	void GetSimVariantsIdsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void GetSimVariantDataSend(int32 m_Var_ID);
+	void GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateSimVariantSend(FString m_VariantName);
+	void CreateSimVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteVariantSend(int32 m_Var_ID);
+	void DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+
+
 
 };
