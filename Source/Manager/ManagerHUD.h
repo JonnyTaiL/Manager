@@ -206,15 +206,19 @@ public:
 	void GetModifiersSend();
 	void GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+
+	/**
+	*@param Type 0 for debuffs, 1 for buffs.
+	*/
 	UFUNCTION(BlueprintCallable)
-	void CreateModifierSend(FModifierData Data, bool Type);
+	void CreateModifierSend(FModifierData Data, int32 Type);
 	void CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void DeleteModifierSend(int32 m_ID, bool Type);
+	void DeleteModifierSend(int32 m_ID, int32 Type);
 	void DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateModifierSend(int32 m_ID, FModifierData Data, bool Type);
+	void UpdateModifierSend(int32 m_ID, FModifierData Data);
 	void UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 };
