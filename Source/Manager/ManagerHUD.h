@@ -31,8 +31,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestionUpdated, bool, Success);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantCreated, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantDeleted, bool, Success);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnModifiersDataReceived, bool, Success, const TArray<FModifierData>&, buffs, const TArray<FModifierData>&, debuffs);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSimVariantDataReceived, bool, Success, const FSimVariantData&, SimVariantData);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnModifiersDataReceived, bool, Success, const TArray<FModifierData>&, buffs, const TArray<FModifierData>&, debuffs);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierCreated, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierDeleted, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierUpdated, bool, Success);
 
 // 
 
@@ -124,7 +128,12 @@ public:
 	FOnSimVariantDeleted OnSimVariantDeleted_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnModifiersDataReceived OnModifiersDataReceived_Callback;
-
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierCreated OnModifierCreated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierDeleted OnModifierDeleted_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierUpdated OnModifierUpdated_Callback;
 	//
 
 
@@ -197,6 +206,15 @@ public:
 	void GetModifiersSend();
 	void GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateModifierSend(FModifierData Data, bool Type);
+	void CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteModifierSend(int32 m_ID, bool Type);
+	void DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateModifierSend(int32 m_ID, FModifierData Data, bool Type);
+	void UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 };
