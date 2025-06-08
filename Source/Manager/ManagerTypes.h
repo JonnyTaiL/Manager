@@ -120,8 +120,6 @@ struct FModifierData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float USCompleteChance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxSPModificator;
