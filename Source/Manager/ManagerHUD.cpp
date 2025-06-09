@@ -762,6 +762,7 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 						Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
 						Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
 						Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
+						Buff.Type = 1;
 						Buffs.Add(Buff);
 						
 					}
@@ -786,7 +787,7 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 						Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
 						Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
 						Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
-
+						Debuff.Type = 0;
 						Debuffs.Add(Debuff);
 					}
 				}
@@ -800,7 +801,7 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 	}
 }
 
-void AManagerHUD::CreateModifierSend(FModifierData Data, bool Type)
+void AManagerHUD::CreateModifierSend(FModifierData Data, int32 Type)
 {
 
 	FString URL = "http://26.76.184.253:8000/createmodifier";
@@ -812,7 +813,7 @@ void AManagerHUD::CreateModifierSend(FModifierData Data, bool Type)
 	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
 	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
 	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
-	JsonObject->SetNumberField("m_MaxTaskModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("m_MaxTasksModificator", Data.MaxTasksModificator);
 	JsonObject->SetNumberField("flag", Type);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
@@ -838,7 +839,7 @@ void AManagerHUD::CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePt
 }
 
 
-void AManagerHUD::DeleteModifierSend(int32 m_ID, bool Type)
+void AManagerHUD::DeleteModifierSend(int32 m_ID, int32 Type)
 {
 	uint32 ModifierID = m_ID;
 
@@ -847,7 +848,7 @@ void AManagerHUD::DeleteModifierSend(int32 m_ID, bool Type)
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 	JsonObject->SetNumberField("m_id", ModifierID);
-	JsonObject->SetNumberField("Flag", Type);
+	JsonObject->SetNumberField("flag", Type);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
@@ -870,7 +871,7 @@ void AManagerHUD::DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePt
 	}
 }
 
-void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data, bool Type)
+void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data)
 {
 	uint32 ModifierID = m_ID;
 
@@ -884,8 +885,8 @@ void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data, bool Type)
 	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
 	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
 	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
-	JsonObject->SetNumberField("m_MaxTaskModificator", Data.MaxTasksModificator);
-	JsonObject->SetNumberField("flag", Type);
+	JsonObject->SetNumberField("m_MaxTasksModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("flag", Data.Type);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
