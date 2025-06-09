@@ -372,7 +372,11 @@ void AManagerHUD::CreateTestVariantSend(FString m_Name, FString m_Group)
 
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	JsonObject->SetStringField("variant_name", m_Name);
+	JsonObject->SetStringField("buff", m_Name);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
 	JsonObject->SetStringField("group", m_Group);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
@@ -762,8 +766,8 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 						
 					}
 				}
-				
 			}
+
 			const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
 			if (JsonObject->TryGetArrayField("debuffs", DebuffsArray))
 			{
@@ -786,7 +790,6 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 						Debuffs.Add(Debuff);
 					}
 				}
-				
 			}
 
 
@@ -797,6 +800,112 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 	}
 }
 
+void AManagerHUD::CreateModifierSend(FModifierData Data, bool Type)
+{
+
+	FString URL = "http://26.76.184.253:8000/createmodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("m_name", Data.Name);
+	JsonObject->SetStringField("m_description", Data.Description);
+	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
+	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
+	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
+	JsonObject->SetNumberField("m_MaxTaskModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("flag", Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::CreateModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierCreated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("--Modifier Created--"));
+	}
+	
+}
+
+
+void AManagerHUD::DeleteModifierSend(int32 m_ID, bool Type)
+{
+	uint32 ModifierID = m_ID;
+
+	FString URL = "http://26.76.184.253:8000/deletemodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("m_id", ModifierID);
+	JsonObject->SetNumberField("Flag", Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::DeleteModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(m_ID));
+}
+
+void AManagerHUD::DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Modifier Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data, bool Type)
+{
+	uint32 ModifierID = m_ID;
+
+	FString URL = "http://26.76.184.253:8000/updatemodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("m_id", m_ID);
+	JsonObject->SetStringField("m_name", Data.Name);
+	JsonObject->SetStringField("m_description", Data.Description);
+	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
+	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
+	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
+	JsonObject->SetNumberField("m_MaxTaskModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("flag", Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Modifier Updated--"));
+	}
+}
 
 
 void AManagerHUD::GetSimVariantDataSend(int32 m_Var_ID)
