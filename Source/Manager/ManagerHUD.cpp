@@ -111,20 +111,22 @@ void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
 
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	TArray<int> buff_ids = { 1 };
-	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
 
-	TArray<int> debuff_ids = { 1 };
+	TArray<FModifierData> Buffs = EmployeeData.Buffs;
+	TArray<FModifierData> Debuffs = EmployeeData.Debuffs;
+
+	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
 	TArray<TSharedPtr<FJsonValue>> DebuffsJsonArray;
 
-	for (int32 buff_id : buff_ids)
+	for (FModifierData Buff : Buffs)
 	{
-		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(buff_id));
+
+		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Buff.ID));
 	}
 
-	for (int32 debuff_id : debuff_ids)
+	for (FModifierData Debuff : Debuffs)
 	{
-		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(debuff_id));
+		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Debuff.ID));
 	}
 
 	
@@ -167,12 +169,294 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	if (bWasSuccessful)
 	{
 		OnEmployeeAdded_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Added--"));
 	}
 	else
 	{
 		OnEmployeeAdded_Callback.Broadcast(false);
 	}
 }
+
+void AManagerHUD::DeleteEmployeeSend(int32 m_ID)
+{
+	FString URL = "http://26.76.184.253:8000/deleteworker";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+
+	JsonObject->SetNumberField(TEXT("worker_id"), m_ID);
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::DeleteEmployeeReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::DeleteEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateEmployeeSend(FEmployeeData EmployeeData)
+{
+	FString URL = "http://26.76.184.253:8000/updateworker";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	//TArray<int> buff_ids = { 1 };
+	TArray<FModifierData> Buffs = EmployeeData.Buffs;
+	TArray<FModifierData> Debuffs = EmployeeData.Debuffs;
+	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
+
+	TArray<int> debuff_ids = { 1 };
+	TArray<TSharedPtr<FJsonValue>> DebuffsJsonArray;
+
+	for (FModifierData Buff : Buffs)
+	{
+
+		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Buff.ID));
+	}
+
+	for (FModifierData Debuff : Debuffs)
+	{
+		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Debuff.ID));
+	}
+
+
+	JsonObject->SetNumberField(TEXT("worker_id"), EmployeeData.ID);
+	JsonObject->SetStringField(TEXT("worker_name"), EmployeeData.Name);
+	JsonObject->SetStringField(TEXT("worker_description"), EmployeeData.Description);
+	JsonObject->SetNumberField(TEXT("worker_maxhours"), EmployeeData.MaxHours);
+	JsonObject->SetNumberField(TEXT("worker_maxsp"), EmployeeData.Skill);
+	JsonObject->SetNumberField(TEXT("worker_maxtasks"), EmployeeData.MaxTasks);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_3D"), EmployeeData.Proficiency.Modeling);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_2D"), EmployeeData.Proficiency.Art);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_Code"), EmployeeData.Proficiency.Code);
+	JsonObject->SetArrayField(TEXT("buffs"), BuffsJsonArray);
+	JsonObject->SetArrayField(TEXT("debuffs"), DebuffsJsonArray);
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Updated--"));
+	}
+}
+
+void AManagerHUD::AddUserStorySend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://26.76.184.253:8000/createuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	TArray<int32> DoBeforeArray = USData.DoBefore;
+	TArray<int32> DoughterArray = USData.ChildUS;
+	TArray<int32> ParentsArray = USData.ParentUS;
+
+	TArray<TSharedPtr<FJsonValue>> DoBeforeJsonArray;
+	TArray<TSharedPtr<FJsonValue>> DoughterJsonArray;
+	TArray<TSharedPtr<FJsonValue>> ParentsJsonArray;
+
+
+	for (int32 DoBeforeItem : DoBeforeArray)
+	{
+
+		DoBeforeJsonArray.Add(MakeShared<FJsonValueNumber>(DoBeforeItem));
+	}
+
+	for (int32 DoughterItem : DoughterArray)
+	{
+		DoughterJsonArray.Add(MakeShared<FJsonValueNumber>(DoughterItem));
+	}
+
+	for (int32 ParentsItem : ParentsArray)
+	{
+		ParentsJsonArray.Add(MakeShared<FJsonValueNumber>(ParentsItem));
+	}
+
+	JsonObject->SetStringField(TEXT("us_description"), USData.Description);
+	JsonObject->SetNumberField(TEXT("us_complexity"), USData.Complexity);
+	JsonObject->SetNumberField(TEXT("us_hours"), USData.Hours);
+	JsonObject->SetArrayField(TEXT("us_dobefore"), DoBeforeJsonArray);
+	JsonObject->SetArrayField(TEXT("us_doughter"), DoughterJsonArray);
+	JsonObject->SetArrayField(TEXT("us_parent"), ParentsJsonArray);
+	JsonObject->SetBoolField(TEXT("Modeling"), Requare.Modeling);
+	JsonObject->SetBoolField(TEXT("Art"), Requare.Art);
+	JsonObject->SetBoolField(TEXT("Code"), Requare.Code);
+
+
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::AddUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::AddUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryAdded_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Added--"));
+	}
+}
+
+void AManagerHUD::DeleteUserStorySend(int32 m_ID)
+{
+	FString URL = "http://26.76.184.253:8000/deleteuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+
+	JsonObject->SetNumberField(TEXT("us_id"), m_ID);
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::DeleteUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::DeleteUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateUserStorySend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://26.76.184.253:8000/updateuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	TArray<int32> DoBeforeArray = USData.DoBefore;
+	TArray<int32> DoAfterArray = USData.ChildUS;
+	TArray<int32> ParentsArray = USData.ParentUS;
+
+	TArray<TSharedPtr<FJsonValue>> DoBeforeJsonArray;
+	TArray<TSharedPtr<FJsonValue>> DoAfterJsonArray;
+	TArray<TSharedPtr<FJsonValue>> ParentsJsonArray;
+
+
+	for (int32 DoBeforeItem : DoBeforeArray)
+	{
+
+		DoBeforeJsonArray.Add(MakeShared<FJsonValueNumber>(DoBeforeItem));
+	}
+
+	for (int32 DoAfterItem : DoAfterArray)
+	{
+		DoAfterJsonArray.Add(MakeShared<FJsonValueNumber>(DoAfterItem));
+	}
+
+	for (int32 ParentsItem : ParentsArray)
+	{
+		ParentsJsonArray.Add(MakeShared<FJsonValueNumber>(ParentsItem));
+	}
+
+	JsonObject->SetNumberField(TEXT("us_id"), USData.ID);
+	JsonObject->SetStringField(TEXT("us_description"), USData.Description);
+	JsonObject->SetNumberField(TEXT("us_complexity"), USData.Complexity);
+	JsonObject->SetNumberField(TEXT("us_hours"), USData.Hours);
+	JsonObject->SetArrayField(TEXT("us_dobefore"), DoBeforeJsonArray);
+	JsonObject->SetArrayField(TEXT("us_doughter"), DoAfterJsonArray);
+	JsonObject->SetArrayField(TEXT("us_parent"), ParentsJsonArray);
+	JsonObject->SetBoolField(TEXT("Modeling"), Requare.Modeling);
+	JsonObject->SetBoolField(TEXT("Art"), Requare.Art);
+	JsonObject->SetBoolField(TEXT("Code"), Requare.Code);
+
+
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::UpdateUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Updated--"));
+	}
+}
+
+
 
 
 
