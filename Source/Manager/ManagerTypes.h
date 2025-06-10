@@ -119,6 +119,17 @@ struct FModifierData
 	FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float USCompleteChance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxSPModificator;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHoursModificator;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxTasksModificator;
+
 
 };
 

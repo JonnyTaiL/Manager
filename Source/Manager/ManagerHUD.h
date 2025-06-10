@@ -33,6 +33,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantCreated, bool, Success)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSimVariantDeleted, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSimVariantDataReceived, bool, Success, const FSimVariantData&, SimVariantData);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnModifiersDataReceived, bool, Success, const TArray<FModifierData>&, buffs, const TArray<FModifierData>&, debuffs);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierCreated, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierDeleted, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierUpdated, bool, Success);
+
 // 
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTestDataArrayReceived, bool, Success);
@@ -114,13 +119,21 @@ public:
 	FOnEmployeeAdded OnEmployeeAdded_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnSimVariantIdsReceived OnSimVariantIdsReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnSimVariantDataReceived OnSimVariantDataReceived_Callback;
 
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnSimVariantCreated OnSimVariantCreated_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnSimVariantDeleted OnSimVariantDeleted_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
-	FOnSimVariantDataReceived OnSimVariantDataReceived_Callback;
+	FOnModifiersDataReceived OnModifiersDataReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierCreated OnModifierCreated_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierDeleted OnModifierDeleted_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnModifierUpdated OnModifierUpdated_Callback;
 	//
 
 
@@ -135,7 +148,7 @@ public:
 	void GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void AddEmployeeSend();
+	void AddEmployeeSend(FEmployeeData EmployeeData);
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
@@ -189,7 +202,23 @@ public:
 	void DeleteVariantSend(int32 m_Var_ID);
 	void DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void GetModifiersSend();
+	void GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 
+	/**
+	*@param Type 0 for debuffs, 1 for buffs.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void CreateModifierSend(FModifierData Data, int32 Type);
+	void CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteModifierSend(int32 m_ID, int32 Type);
+	void DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateModifierSend(int32 m_ID, FModifierData Data);
+	void UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 };

@@ -104,12 +104,10 @@ void AManagerHUD::GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResp
 	
 }
 
-void AManagerHUD::AddEmployeeSend()
+void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
 {
 	FString URL = "http://26.76.184.253:8000/createworker";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-
-
 
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -129,17 +127,20 @@ void AManagerHUD::AddEmployeeSend()
 		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(debuff_id));
 	}
 
+	
 
-	JsonObject->SetStringField(TEXT("worker_name"), TEXT("Oleg"));
-	JsonObject->SetStringField(TEXT("worker_description"), TEXT("Oleg"));
-	JsonObject->SetNumberField(TEXT("worker_maxhours"), 1);
-	JsonObject->SetNumberField(TEXT("worker_maxsp"), 1);
-	JsonObject->SetNumberField(TEXT("worker_maxtasks"), 1);
-	JsonObject->SetNumberField(TEXT("worker_proficiency_3D"), 0.0f);
-	JsonObject->SetNumberField(TEXT("worker_proficiency_2D"), 0.0f);
-	JsonObject->SetNumberField(TEXT("worker_proficiency_Code"), 0.0f);
+	JsonObject->SetStringField(TEXT("worker_name"), EmployeeData.Name);
+	JsonObject->SetStringField(TEXT("worker_description"), EmployeeData.Description);
+	JsonObject->SetNumberField(TEXT("worker_maxhours"), EmployeeData.MaxHours);
+	JsonObject->SetNumberField(TEXT("worker_maxsp"), EmployeeData.Skill);
+	JsonObject->SetNumberField(TEXT("worker_maxtasks"), EmployeeData.MaxTasks);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_3D"), EmployeeData.Proficiency.Modeling);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_2D"), EmployeeData.Proficiency.Art);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_Code"), EmployeeData.Proficiency.Code);
 	JsonObject->SetArrayField(TEXT("buffs"), BuffsJsonArray);
 	JsonObject->SetArrayField(TEXT("debuffs"), DebuffsJsonArray);
+
+
 
 	FString OutputString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -371,7 +372,11 @@ void AManagerHUD::CreateTestVariantSend(FString m_Name, FString m_Group)
 
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	JsonObject->SetStringField("variant_name", m_Name);
+	JsonObject->SetStringField("buff", m_Name);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
+	JsonObject->SetStringField("group", m_Group);
 	JsonObject->SetStringField("group", m_Group);
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
@@ -708,6 +713,200 @@ void AManagerHUD::DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr 
 
 }
 
+void AManagerHUD::GetModifiersSend()
+{
+	FString OutputString;
+	FString URL = "http://26.76.184.253:8000/getmodifiers";
+
+	//URL = URL + "?usvariant_id=" + variant_id;
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetModifiersReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+		FString answer = Response->GetContentAsString();
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+		if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+		{
+			// Get Modifiers
+
+		//	const TArray<TSharedPtr<FJsonValue>>* ModifiersArray;
+		
+			TArray<FModifierData> Buffs;
+			TArray<FModifierData> Debuffs;
+
+
+			const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
+			if (JsonObject->TryGetArrayField("buffs", BuffsArray))
+			{
+
+
+				for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
+				{
+					const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+					if (ModifierObj.IsValid())
+					{
+						FModifierData Buff;
+						Buff.ID = ModifierObj->GetIntegerField("buff_id");
+						Buff.Name = ModifierObj->GetStringField("buff_name");
+						Buff.Description = ModifierObj->GetStringField("buff_description");
+						Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
+						Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
+						Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
+						Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
+						Buff.Type = 1;
+						Buffs.Add(Buff);
+						
+					}
+				}
+			}
+
+			const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
+			if (JsonObject->TryGetArrayField("debuffs", DebuffsArray))
+			{
+	
+
+				for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
+				{
+					const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+					if (ModifierObj.IsValid())
+					{
+						FModifierData Debuff;
+						Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
+						Debuff.Name = ModifierObj->GetStringField("debuff_name");
+						Debuff.Description = ModifierObj->GetStringField("debuff_description");
+						Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
+						Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
+						Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
+						Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
+						Debuff.Type = 0;
+						Debuffs.Add(Debuff);
+					}
+				}
+			}
+
+
+			OnModifiersDataReceived_Callback.Broadcast(true, Buffs, Debuffs);
+			
+		}
+
+	}
+}
+
+void AManagerHUD::CreateModifierSend(FModifierData Data, int32 Type)
+{
+
+	FString URL = "http://26.76.184.253:8000/createmodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField("m_name", Data.Name);
+	JsonObject->SetStringField("m_description", Data.Description);
+	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
+	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
+	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
+	JsonObject->SetNumberField("m_MaxTasksModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("flag", Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::CreateModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::CreateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierCreated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("--Modifier Created--"));
+	}
+	
+}
+
+
+void AManagerHUD::DeleteModifierSend(int32 m_ID, int32 Type)
+{
+	uint32 ModifierID = m_ID;
+
+	FString URL = "http://26.76.184.253:8000/deletemodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("m_id", ModifierID);
+	JsonObject->SetNumberField("flag", Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::DeleteModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(m_ID));
+}
+
+void AManagerHUD::DeleteModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Modifier Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data)
+{
+	uint32 ModifierID = m_ID;
+
+	FString URL = "http://26.76.184.253:8000/updatemodifier";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("m_id", m_ID);
+	JsonObject->SetStringField("m_name", Data.Name);
+	JsonObject->SetStringField("m_description", Data.Description);
+	JsonObject->SetNumberField("m_USCompleteChance", Data.USCompleteChance);
+	JsonObject->SetNumberField("m_MaxSPModificator", Data.MaxSPModificator);
+	JsonObject->SetNumberField("m_MaxHoursModificator", Data.MaxHoursModificator);
+	JsonObject->SetNumberField("m_MaxTasksModificator", Data.MaxTasksModificator);
+	JsonObject->SetNumberField("flag", Data.Type);
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateModifierReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnModifierUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Modifier Updated--"));
+	}
+}
 
 
 void AManagerHUD::GetSimVariantDataSend(int32 m_Var_ID)
@@ -793,7 +992,7 @@ void AManagerHUD::GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpRespons
 
 					// Buffs
 					const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
-					if (EmployeeObj->TryGetArrayField("modifiers", BuffsArray))
+					if (EmployeeObj->TryGetArrayField("buffs", BuffsArray))
 					{
 						for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
 						{
@@ -804,6 +1003,10 @@ void AManagerHUD::GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpRespons
 								Buff.ID = ModifierObj->GetIntegerField("buff_id");
 								Buff.Name = ModifierObj->GetStringField("buff_name");
 								Buff.Description = ModifierObj->GetStringField("buff_description");
+								Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
+								Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
+								Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
+								Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
 
 								// Add to struct here
 								Employee.Buffs.Add(Buff);
@@ -815,7 +1018,7 @@ void AManagerHUD::GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpRespons
 
 					// Debuffs
 					const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
-					if (EmployeeObj->TryGetArrayField("modifiers", DebuffsArray))
+					if (EmployeeObj->TryGetArrayField("debuffs", DebuffsArray))
 					{
 						for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
 						{
@@ -826,6 +1029,10 @@ void AManagerHUD::GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpRespons
 								Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
 								Debuff.Name = ModifierObj->GetStringField("debuff_name");
 								Debuff.Description = ModifierObj->GetStringField("debuff_description");
+								Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
+								Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
+								Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
+								Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
 
 								// Add to struct here
 								Employee.Debuffs.Add(Debuff);
