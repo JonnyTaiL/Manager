@@ -9,6 +9,8 @@
 #include "Manager/ManagerHUD.h"
 #include "Manager/ManagerTypes.h"
 
+#include "Manager/ManagerConfig.h"
+
 
 void UW_TestsWindowBody::NativeConstruct()
 {
@@ -26,7 +28,7 @@ void UW_TestsWindowBody::GetVariantsDataSend()
 
 	if (MHud != nullptr)
 	{
-		FString URL = "http://26.76.184.253:8000/getvariantsdata";
+		FString URL = "http://" + Config::SERVER_IP + "/getvariantsdata";
 		FString OutputString;
 
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -78,7 +80,7 @@ void UW_TestsWindowBody::GetVariantsDataReceive(FHttpRequestPtr Request, FHttpRe
 
 void UW_TestsWindowBody::GetTestDataArraySend(FString Id)
 {
-	FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallvariantdata";
 	FString variant_id = Id; 
 	URL = URL + "?variant_id=" + variant_id;
 
@@ -153,7 +155,7 @@ void UW_TestsWindowBody::GetTestDataArrayRecieve(FHttpRequestPtr Request, FHttpR
 
 void UW_TestsWindowBody::AddCompletedVariantSend(int32 UserId, int32 VarID, int32 Score)
 {
-	FString URL = "http://26.76.184.253:8000/addcompletedvariants";
+	FString URL = "http://" + Config::SERVER_IP + "/addcompletedvariants";
 	FString OutputString;
 
 
@@ -192,7 +194,7 @@ void UW_TestsWindowBody::AddCompletedVariantRecieve(FHttpRequestPtr Request, FHt
 
 void UW_TestsWindowBody::GetCompletedVariantsDataSend(FString Id)
 {
-	FString URL = "http://26.76.184.253:8000/getcompletedvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getcompletedvariantsdata";
 	FString variant_id = Id;
 	URL = URL + "?user_id=" + variant_id;
 
@@ -277,7 +279,7 @@ void UW_TestsWindowBody::QuestionGet(FHttpRequestPtr Request, FHttpResponsePtr R
 void UW_TestsWindowBody::CreateVariantSend(FString Name, FString Group)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/createvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createvariant";
 
 
 	//AManagerHUD* Hud = Cast<AManagerHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -317,7 +319,7 @@ void UW_TestsWindowBody::CreateVariantReceive(FHttpRequestPtr Request, FHttpResp
 void UW_TestsWindowBody::GetAllQuestionsSend(FString Id)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallvariantdata";
 	FString variant_id = Id;
 	URL = URL + "?variant_id=" + variant_id;
 
@@ -424,7 +426,7 @@ void UW_TestsWindowBody::UpdateQuestionsSend(FString Id, TArray<FTestDataArraySt
 	TSharedRef<TJsonWriter<>> Writer2 = TJsonWriterFactory<>::Create(&StringToSend); //Ð‘Ð›Ð Ð‘Ð›Ð Ð‘Ð›Ð, Ð”ÐÐ›Ð•Ð• Ð’Ð¡Ð• ÐšÐÐš Ð˜ Ð ÐÐÐ¬Ð¨Ð•
 	FJsonSerializer::Serialize(JsonToSend.ToSharedRef(), Writer2);
 
-	FString URL = "http://26.76.184.253:8000/updatevariantquestions";
+	FString URL = "http://" + Config::SERVER_IP + "/updatevariantquestions";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &UW_TestsWindowBody::UpdateQuestionsReceive);
 	Request->SetVerb("POST");

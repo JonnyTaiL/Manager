@@ -2,6 +2,7 @@
 
 
 #include "ManagerHUD.h"
+#include "ManagerConfig.h"
 //#include "ManagerTypes.h"
 
 
@@ -15,6 +16,7 @@
 void AManagerHUD::NativeConstruct()
 {
 	//GetGroupsSend();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "http://" + Config::SERVER_IP + "/createuser");
 }
 
 //void AManagerHUD::SetUserData(FString m_Login, FString m_Name, FString m_Surname, FString m_Patronumic, EPermissionType m_PermissionType, FString m_GroupName)
@@ -106,7 +108,7 @@ void AManagerHUD::GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResp
 
 void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
 {
-	FString URL = "http://26.76.184.253:8000/createworker";
+	FString URL = "http://" + Config::SERVER_IP + "/createworker";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 
 
@@ -179,7 +181,7 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 
 void AManagerHUD::DeleteEmployeeSend(int32 m_ID)
 {
-	FString URL = "http://26.76.184.253:8000/deleteworker";
+	FString URL = "http://" + Config::SERVER_IP + "/deleteworker";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 
@@ -216,7 +218,7 @@ void AManagerHUD::DeleteEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 
 void AManagerHUD::UpdateEmployeeSend(FEmployeeData EmployeeData)
 {
-	FString URL = "http://26.76.184.253:8000/updateworker";
+	FString URL = "http://" + Config::SERVER_IP + "/updateworker";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 
 
@@ -277,7 +279,7 @@ void AManagerHUD::UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 
 void AManagerHUD::AddUserStorySend(FUSData USData, FProficiencyRequare Requare)
 {
-	FString URL = "http://26.76.184.253:8000/createuserstory";
+	FString URL = "http://" + Config::SERVER_IP + "/createuserstory";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 
@@ -349,7 +351,7 @@ void AManagerHUD::AddUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 
 void AManagerHUD::DeleteUserStorySend(int32 m_ID)
 {
-	FString URL = "http://26.76.184.253:8000/deleteuserstory";
+	FString URL = "http://" + Config::SERVER_IP + "/deleteuserstory";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 
@@ -386,7 +388,7 @@ void AManagerHUD::DeleteUserStoryReceive(FHttpRequestPtr Request, FHttpResponseP
 
 void AManagerHUD::UpdateUserStorySend(FUSData USData, FProficiencyRequare Requare)
 {
-	FString URL = "http://26.76.184.253:8000/updateuserstory";
+	FString URL = "http://" + Config::SERVER_IP + "/updateuserstory";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 
@@ -469,7 +471,7 @@ void AManagerHUD::GetTestVariantsDataSend()
 
 
 
-	FString URL = "http://26.76.184.253:8000/getvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getvariantsdata";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -525,7 +527,7 @@ void AManagerHUD::GetTestVariantsDataReceive(FHttpRequestPtr Request, FHttpRespo
 
 void AManagerHUD::AddCompletedTestVariantSend(int32 m_UserId, int32 m_VarID, int32 m_Score)
 {
-	FString URL = "http://26.76.184.253:8000/addcompletedvariants";
+	FString URL = "http://" + Config::SERVER_IP + "/addcompletedvariants";
 	FString OutputString;
 
 
@@ -563,7 +565,7 @@ void AManagerHUD::AddCompleteTestVariantRecieve(FHttpRequestPtr Request, FHttpRe
 
 void AManagerHUD::GetCompletedTestVariantsIdsSend(FString Id)
 {
-	FString URL = "http://26.76.184.253:8000/getcompletedvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getcompletedvariantsdata";
 	FString variant_id = Id;
 	URL = URL + "?user_id=" + variant_id;
 
@@ -648,7 +650,7 @@ void AManagerHUD::RateCustomAnswerReceive(FHttpRequestPtr Request, FHttpResponse
 void AManagerHUD::CreateTestVariantSend(FString m_Name, FString m_Group)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/createvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createvariant";
 
 
 	//AManagerHUD* Hud = Cast<AManagerHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -687,7 +689,7 @@ void AManagerHUD::CreateTestVariantReceive(FHttpRequestPtr Request, FHttpRespons
 void AManagerHUD::GetAllQuestionsSend(FString Id)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallvariantdata";
 	FString variant_id = Id;
 	URL = URL + "?variant_id=" + variant_id;
 
@@ -792,7 +794,7 @@ void AManagerHUD::UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> A
 	TSharedRef<TJsonWriter<>> Writer2 = TJsonWriterFactory<>::Create(&StringToSend); //Ð‘Ð›Ð Ð‘Ð›Ð Ð‘Ð›Ð, Ð”ÐÐ›Ð•Ð• Ð’Ð¡Ð• ÐšÐÐš Ð˜ Ð ÐÐÐ¬Ð¨Ð•
 	FJsonSerializer::Serialize(JsonToSend.ToSharedRef(), Writer2);
 
-	FString URL = "http://26.76.184.253:8000/updatevariantquestions";
+	FString URL = "http://" + Config::SERVER_IP + "/updatevariantquestions";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateQuestionsReceive);
 	Request->SetVerb("POST");
@@ -826,7 +828,7 @@ void AManagerHUD::UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponseP
 	FString group = GroupName;
 	uint32 user_id = UserID;
 
-	FString URL = "http://26.76.184.253:8000/getallusvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallusvariantsdata";
 	FString OutputString;
 
   TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -895,7 +897,7 @@ void AManagerHUD::CreateSimVariantSend(FString m_VariantName)
 	FString group = GroupName;
 	FString VariantName = m_VariantName;
 
-	FString URL = "http://26.76.184.253:8000/createemptyusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createemptyusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -949,7 +951,7 @@ void AManagerHUD::DeleteVariantSend(int32 m_Var_ID)
 	uint32 Variant_ID = m_Var_ID;
 
 
-	FString URL = "http://26.76.184.253:8000/deleteusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/deleteusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -997,10 +999,150 @@ void AManagerHUD::DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr 
 
 }
 
+//uint32 Variant_ID = m_Var_ID;
+//
+//
+//FString URL = "http://" + Config::SERVER_IP + "/deleteusvariant";
+//FString OutputString;
+//
+//TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+//JsonObject->SetNumberField("usvariant_id", Variant_ID);
+////JsonObject->SetStringField("usvariant_name", VariantName);
+//TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+//FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+//
+//TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+//Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::DeleteVariantRecive);
+//Request->SetVerb("POST");
+//Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+//Request->SetContentAsString(OutputString);
+//Request->SetURL(URL);
+//Request->ProcessRequest();
+//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(Variant_ID));
+
+void AManagerHUD::AssignEmployeeSend(int32 m_VarID, int32 m_EmployeeID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/addworkertovariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("worker_id", m_EmployeeID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::AssignEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::AssignEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+
+	}
+}
+
+void AManagerHUD::RemoveEmployeeSend(int32 m_VarID, int32 m_EmployeeID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteworkerfromvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("worker_id", m_EmployeeID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::RemoveEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::RemoveEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+
+	}
+}
+
+void AManagerHUD::AssignUserStorySend(int32 m_VarID, int32 m_UserStoryID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/addustovariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("US_id", m_UserStoryID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::AssignUserStoryReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::AssignUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+
+	}
+}
+
+void AManagerHUD::RemoveUserStorySend(int32 m_VarID, int32 m_UserStoryID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteusfromvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("US_id", m_UserStoryID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::RemoveUserStoryReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::RemoveUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+
+	}
+}
+
+
+
 void AManagerHUD::GetModifiersSend()
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getmodifiers";
+	FString URL = "http://" + Config::SERVER_IP + "/getmodifiers";
 
 	//URL = URL + "?usvariant_id=" + variant_id;
 
@@ -1088,7 +1230,7 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 void AManagerHUD::CreateModifierSend(FModifierData Data, int32 Type)
 {
 
-	FString URL = "http://26.76.184.253:8000/createmodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/createmodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -1127,7 +1269,7 @@ void AManagerHUD::DeleteModifierSend(int32 m_ID, int32 Type)
 {
 	uint32 ModifierID = m_ID;
 
-	FString URL = "http://26.76.184.253:8000/deletemodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/deletemodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -1159,7 +1301,7 @@ void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data)
 {
 	uint32 ModifierID = m_ID;
 
-	FString URL = "http://26.76.184.253:8000/updatemodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/updatemodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -1196,7 +1338,7 @@ void AManagerHUD::UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePt
 void AManagerHUD::GetSimVariantDataSend(int32 m_Var_ID)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getusvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getusvariantdata";
 
 
 

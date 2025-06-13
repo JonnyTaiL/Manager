@@ -202,6 +202,9 @@ public:
 
 	// SIMULATION //
 
+
+	// SIMULATION - Core //
+
 	UFUNCTION(BlueprintCallable)
 	void GetSimVariantsIdsSend();
 	void GetSimVariantsIdsReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
@@ -217,6 +220,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeleteVariantSend(int32 m_Var_ID);
 	void DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void AssignEmployeeSend(int32 m_VarID, int32 m_EmployeeID);
+	void AssignEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveEmployeeSend(int32 m_VarID, int32 m_EmployeeID);
+	void RemoveEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void AssignUserStorySend(int32 m_VarID, int32 m_UserStoryID);
+	void AssignUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveUserStorySend(int32 m_VarID, int32 m_UserStoryID);
+	void RemoveUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
 
 
 	// SIMULATION - MODIFIERS //

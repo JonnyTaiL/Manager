@@ -7,10 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "ManagerTypes.h"
 #include "ManagerHUD.h"
-//#include "W_Button_Default.h"
-//#include "W_TextBox_Default.h"
-//#include "Components/WidgetSwitcher.h"
-//#include "Components/TextBlock.h"
+#include "Manager/ManagerConfig.h"
+
 
 
 
@@ -22,6 +20,8 @@ void UW_LoginPanel::NativeConstruct()
 	BTN_Register->OnDefaultButtonClicked.AddDynamic(this, &UW_LoginPanel::OnRegisterButtonClicked);
 
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "http://" + Config::SERVER_IP + "/createuser");
+
 	//GetGroupsSend();
 	//GetPermissionsSend();
 
@@ -30,7 +30,7 @@ void UW_LoginPanel::NativeConstruct()
 void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LoginButtonClicked_CPP"));
-	/*FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	/*FString URL = "http://" + Config::SERVER_IP + "/getallvariantdata";
 	FString variant_id;
 	URL = URL + "?variant_id=" + variant_id;
 
@@ -51,8 +51,8 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 	}
 	else {
 		FString OutputString;
-		FString URL = "http://26.76.184.253:8000/checkuserdata";
-
+		//FString URL = "http://" + Config::SERVER_IP + "/checkuserdata";
+		FString URL = "http://26.193.76.196/checkuserdata";
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_Login->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("password", TB_Password->TB_TextBox->GetText().ToString());
@@ -66,6 +66,9 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 		Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 		Request->SetContentAsString(OutputString);
 		Request->ProcessRequest();
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, URL);
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "AUTH CALLED");
 	}
 }
 
@@ -105,7 +108,7 @@ void UW_LoginPanel::OnRegisterButtonClicked_Implementation()
 	}
 	else {
 		FString OutputString;
-		FString URL = "http://26.76.184.253:8000/createuser";
+		FString URL = "http://" + Config::SERVER_IP + "/createuser";
 
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_regLogin->TB_TextBox->GetText().ToString());
@@ -140,7 +143,7 @@ void UW_LoginPanel::GetGroupsSend()
 {
 	//Отправка запроса на получение групп массивом строк
 
-	FString URL = "http://26.76.184.253:8000/getgroupsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getgroupsdata";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetGroupsReceive);
 	Request->SetVerb("GET");
@@ -153,7 +156,7 @@ void UW_LoginPanel::GetPermissionsSend()
 	//Отправка запроса на получение уровней доступа массивом строк
 
 
-	FString URL = "http://26.76.184.253:8000/getpermissionsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getpermissionsdata";
 
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetPermissionsReceive);
@@ -171,7 +174,10 @@ void UW_LoginPanel::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRes
 	/*
 	}*/
 
-
+	if (!bWasSuccessful)
+	{
+		return;
+	}
 	FString answer = Response->GetContentAsString();
 	if (answer == "-1")
 	{
