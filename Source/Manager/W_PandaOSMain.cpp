@@ -2,6 +2,7 @@
 
 
 #include "W_PandaOSMain.h"
+#include "ManagerConfig.h"
 
 void UW_PandaOSMain::NativeConstruct()
 {
@@ -10,9 +11,9 @@ void UW_PandaOSMain::NativeConstruct()
 
 void UW_PandaOSMain::UserAuthorize(FString Login, FString Password)
 {
-	FString URL = "http://26.76.184.253:8000/checkuserdata";
+	FString URL = "http://" + Config::SERVER_IP + "/checkuserdata";
 	URL = URL + "?login=" + Login + "&password=" + Password;
-
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "ÎÏÀ×ÊÈ");
 	
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UserAuthorizeAnswerReceive);
@@ -48,7 +49,7 @@ void UW_PandaOSMain::UserAuthorizeAnswerReceive(FHttpRequestPtr Request, FHttpRe
 void UW_PandaOSMain::UserRegister(FString Login, FString Password, FString Name, FString Surname, FString Patronymic, int32 Group, int32 Permission)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/createuser";
+	FString URL = "http://" + Config::SERVER_IP + "/createuser";
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 	JsonObject->SetStringField("login", Login);

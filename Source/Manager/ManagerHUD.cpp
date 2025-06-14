@@ -2,6 +2,7 @@
 
 
 #include "ManagerHUD.h"
+#include "ManagerConfig.h"
 //#include "ManagerTypes.h"
 
 
@@ -15,6 +16,7 @@
 void AManagerHUD::NativeConstruct()
 {
 	//GetGroupsSend();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "http://" + Config::SERVER_IP + "/createuser");
 }
 
 //void AManagerHUD::SetUserData(FString m_Login, FString m_Name, FString m_Surname, FString m_Patronumic, EPermissionType m_PermissionType, FString m_GroupName)
@@ -104,27 +106,154 @@ void AManagerHUD::GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResp
 	
 }
 
+void AManagerHUD::GetAllEmployeesSend()
+{
+	FString URL = "http://" + Config::SERVER_IP + "/getallworkers";
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetCompletedTestVariantsIdsReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+
+
+
+
+
+void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		TArray<FEmployeeData> Employees;
+
+		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+		FString answer = Response->GetContentAsString();
+
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); 
+
+
+		const TArray<TSharedPtr<FJsonValue>>* EmployeesArray;
+		if (JsonObject->TryGetArrayField("workers", EmployeesArray))
+		{
+			for (const TSharedPtr<FJsonValue>& EmployeeValue : *EmployeesArray)
+			{
+				const TSharedPtr<FJsonObject> EmployeeObj = EmployeeValue->AsObject();
+				if (EmployeeObj.IsValid())
+				{
+					FEmployeeData Employee;
+
+
+					int32 EmployeeID = EmployeeObj->GetIntegerField("worker_id");
+					FString Employee_Name = EmployeeObj->GetStringField("worker_name");
+					FString Employee_Description = EmployeeObj->GetStringField("worker_description");
+					int32 Employee_MaxHours = EmployeeObj->GetIntegerField("worker_maxhours");
+					int32 Employee_MaxTasks = EmployeeObj->GetIntegerField("worker_maxtasks");
+					int32 Employee_Skill = EmployeeObj->GetIntegerField("worker_maxsp");
+					float Employee_Prof_3D = EmployeeObj->GetNumberField("worker_3D");
+					float Employee_Prof_2D = EmployeeObj->GetNumberField("worker_2D");
+					float Employee_Prof_Code = EmployeeObj->GetNumberField("worker_code");
+
+
+
+					// Get Modifiers
+
+					// Buffs
+					const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
+					if (EmployeeObj->TryGetArrayField("buffs", BuffsArray))
+					{
+						for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
+						{
+							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+							if (ModifierObj.IsValid())
+							{
+								FModifierData Buff;
+								Buff.ID = ModifierObj->GetIntegerField("buff_id");
+								Buff.Name = ModifierObj->GetStringField("buff_name");
+								Buff.Description = ModifierObj->GetStringField("buff_description");
+								Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
+								Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
+								Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
+								Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
+
+								// Add to struct here
+								Employee.Buffs.Add(Buff);
+
+							}
+						}
+					}
+
+
+					// Debuffs
+					const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
+					if (EmployeeObj->TryGetArrayField("debuffs", DebuffsArray))
+					{
+						for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
+						{
+							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+							if (ModifierObj.IsValid())
+							{
+								FModifierData Debuff;
+								Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
+								Debuff.Name = ModifierObj->GetStringField("debuff_name");
+								Debuff.Description = ModifierObj->GetStringField("debuff_description");
+								Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
+								Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
+								Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
+								Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
+
+								// Add to struct here
+								Employee.Debuffs.Add(Debuff);
+							}
+						}
+					}
+
+					Employee.ID = EmployeeID;
+					Employee.Name = Employee_Name;
+					Employee.Description = Employee_Description;
+					Employee.MaxHours = Employee_MaxHours;
+					Employee.MaxTasks = Employee_MaxTasks;
+					Employee.Skill = Employee_Skill;
+					Employee.Proficiency.Modeling = Employee_Prof_3D;
+					Employee.Proficiency.Art = Employee_Prof_2D;
+					Employee.Proficiency.Code = Employee_Prof_Code;
+
+					// Add Employee to sim data array
+					Employees.Add(Employee);
+
+				}
+			}
+
+			OnAllEmployeesReceived_Callback.Broadcast(true, Employees);
+		}
+
+	}
+}
+
 void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
 {
-	FString URL = "http://26.76.184.253:8000/createworker";
+	FString URL = "http://" + Config::SERVER_IP + "/createworker";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	TArray<int> buff_ids = { 1 };
-	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
 
-	TArray<int> debuff_ids = { 1 };
+	TArray<FModifierData> Buffs = EmployeeData.Buffs;
+	TArray<FModifierData> Debuffs = EmployeeData.Debuffs;
+
+	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
 	TArray<TSharedPtr<FJsonValue>> DebuffsJsonArray;
 
-	for (int32 buff_id : buff_ids)
+	for (FModifierData Buff : Buffs)
 	{
-		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(buff_id));
+
+		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Buff.ID));
 	}
 
-	for (int32 debuff_id : debuff_ids)
+	for (FModifierData Debuff : Debuffs)
 	{
-		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(debuff_id));
+		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Debuff.ID));
 	}
 
 	
@@ -167,12 +296,387 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 	if (bWasSuccessful)
 	{
 		OnEmployeeAdded_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Added--"));
 	}
 	else
 	{
 		OnEmployeeAdded_Callback.Broadcast(false);
 	}
 }
+
+
+
+void AManagerHUD::DeleteEmployeeSend(int32 m_ID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteworker";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+
+	JsonObject->SetNumberField(TEXT("worker_id"), m_ID);
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::DeleteEmployeeReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::DeleteEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateEmployeeSend(FEmployeeData EmployeeData)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/updateworker";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	//TArray<int> buff_ids = { 1 };
+	TArray<FModifierData> Buffs = EmployeeData.Buffs;
+	TArray<FModifierData> Debuffs = EmployeeData.Debuffs;
+	TArray<TSharedPtr<FJsonValue>> BuffsJsonArray;
+
+	TArray<int> debuff_ids = { 1 };
+	TArray<TSharedPtr<FJsonValue>> DebuffsJsonArray;
+
+	for (FModifierData Buff : Buffs)
+	{
+
+		BuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Buff.ID));
+	}
+
+	for (FModifierData Debuff : Debuffs)
+	{
+		DebuffsJsonArray.Add(MakeShared<FJsonValueNumber>(Debuff.ID));
+	}
+
+
+	JsonObject->SetNumberField(TEXT("worker_id"), EmployeeData.ID);
+	JsonObject->SetStringField(TEXT("worker_name"), EmployeeData.Name);
+	JsonObject->SetStringField(TEXT("worker_description"), EmployeeData.Description);
+	JsonObject->SetNumberField(TEXT("worker_maxhours"), EmployeeData.MaxHours);
+	JsonObject->SetNumberField(TEXT("worker_maxsp"), EmployeeData.Skill);
+	JsonObject->SetNumberField(TEXT("worker_maxtasks"), EmployeeData.MaxTasks);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_3D"), EmployeeData.Proficiency.Modeling);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_2D"), EmployeeData.Proficiency.Art);
+	JsonObject->SetNumberField(TEXT("worker_proficiency_Code"), EmployeeData.Proficiency.Code);
+	JsonObject->SetArrayField(TEXT("buffs"), BuffsJsonArray);
+	JsonObject->SetArrayField(TEXT("debuffs"), DebuffsJsonArray);
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Updated--"));
+	}
+}
+
+void AManagerHUD::GetAllUserStoriesSend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/getalluserstories";
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUserStoriesReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::GetAllUserStoriesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FString answer = Response->GetContentAsString();
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+
+	const TArray<TSharedPtr<FJsonValue>>* UserStoriesArray;
+	TArray<FUSData> UserStories;
+
+	if (JsonObject->TryGetArrayField("UserStories", UserStoriesArray))
+	{
+		for (const TSharedPtr<FJsonValue>& StoryValue : *UserStoriesArray)
+		{
+			const TSharedPtr<FJsonObject> StoryObj = StoryValue->AsObject();
+			if (StoryObj.IsValid())
+			{
+				FUSData USData;
+
+				int32 US_ID = StoryObj->GetIntegerField("us_id");
+				FString US_Description = StoryObj->GetStringField("us_description");
+				int32 US_Complexity = StoryObj->GetIntegerField("us_compexity");
+				int32 US_Hours = StoryObj->GetIntegerField("us_hours");
+
+
+				//  Get DoBefore Array
+				const TArray<TSharedPtr<FJsonValue>>* DoBeforeArray;
+				if (StoryObj->TryGetArrayField("us_dobefore", DoBeforeArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *DoBeforeArray)
+					{
+						int32 ID = Value->AsNumber();
+						USData.DoBefore.Add(ID);
+					}
+				}
+				//  Get Children Array
+				const TArray<TSharedPtr<FJsonValue>>* DoughterArray;
+				if (StoryObj->TryGetArrayField("us_doughter", DoughterArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *DoughterArray)
+					{
+						USData.ChildUS.Add(Value->AsNumber());
+					}
+				}
+				//  Get Parents Array
+				const TArray<TSharedPtr<FJsonValue>>* ParentArray;
+				if (StoryObj->TryGetArrayField("us_parent", ParentArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *ParentArray)
+					{
+						USData.ParentUS.Add(Value->AsNumber());
+					}
+				}
+
+
+
+				bool US_3D = StoryObj->GetBoolField("3D");
+				bool US_2D = StoryObj->GetBoolField("2D");
+				bool US_Code = StoryObj->GetBoolField("Code");
+
+				USData.ID = US_ID;
+				USData.Description = US_Description;
+				USData.Complexity = US_Complexity;
+				USData.Hours = US_Hours;
+				USData.Proficiencies.Modeling = US_3D;
+				USData.Proficiencies.Art = US_2D;
+				USData.Proficiencies.Code = US_Code;
+
+				// Add userstories array to variant data
+				UserStories.Add(USData);
+
+
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%s"), *SimVariantData.Name));
+			}
+		}
+
+		OnAllUserStoriesReceived_Callback.Broadcast(true, UserStories);
+	}
+}
+
+void AManagerHUD::AddUserStorySend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/createuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	TArray<int32> DoBeforeArray = USData.DoBefore;
+	TArray<int32> DoughterArray = USData.ChildUS;
+	TArray<int32> ParentsArray = USData.ParentUS;
+
+	TArray<TSharedPtr<FJsonValue>> DoBeforeJsonArray;
+	TArray<TSharedPtr<FJsonValue>> DoughterJsonArray;
+	TArray<TSharedPtr<FJsonValue>> ParentsJsonArray;
+
+
+	for (int32 DoBeforeItem : DoBeforeArray)
+	{
+
+		DoBeforeJsonArray.Add(MakeShared<FJsonValueNumber>(DoBeforeItem));
+	}
+
+	for (int32 DoughterItem : DoughterArray)
+	{
+		DoughterJsonArray.Add(MakeShared<FJsonValueNumber>(DoughterItem));
+	}
+
+	for (int32 ParentsItem : ParentsArray)
+	{
+		ParentsJsonArray.Add(MakeShared<FJsonValueNumber>(ParentsItem));
+	}
+
+	JsonObject->SetStringField(TEXT("us_description"), USData.Description);
+	JsonObject->SetNumberField(TEXT("us_complexity"), USData.Complexity);
+	JsonObject->SetNumberField(TEXT("us_hours"), USData.Hours);
+	JsonObject->SetArrayField(TEXT("us_dobefore"), DoBeforeJsonArray);
+	JsonObject->SetArrayField(TEXT("us_doughter"), DoughterJsonArray);
+	JsonObject->SetArrayField(TEXT("us_parent"), ParentsJsonArray);
+	JsonObject->SetBoolField(TEXT("Modeling"), Requare.Modeling);
+	JsonObject->SetBoolField(TEXT("Art"), Requare.Art);
+	JsonObject->SetBoolField(TEXT("Code"), Requare.Code);
+
+
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::AddUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::AddUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryAdded_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Added--"));
+	}
+}
+
+void AManagerHUD::DeleteUserStorySend(int32 m_ID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+
+	JsonObject->SetNumberField(TEXT("us_id"), m_ID);
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::DeleteUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::DeleteUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryDeleted_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Deleted--"));
+	}
+}
+
+void AManagerHUD::UpdateUserStorySend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/updateuserstory";
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	TArray<int32> DoBeforeArray = USData.DoBefore;
+	TArray<int32> DoAfterArray = USData.ChildUS;
+	TArray<int32> ParentsArray = USData.ParentUS;
+
+	TArray<TSharedPtr<FJsonValue>> DoBeforeJsonArray;
+	TArray<TSharedPtr<FJsonValue>> DoAfterJsonArray;
+	TArray<TSharedPtr<FJsonValue>> ParentsJsonArray;
+
+
+	for (int32 DoBeforeItem : DoBeforeArray)
+	{
+
+		DoBeforeJsonArray.Add(MakeShared<FJsonValueNumber>(DoBeforeItem));
+	}
+
+	for (int32 DoAfterItem : DoAfterArray)
+	{
+		DoAfterJsonArray.Add(MakeShared<FJsonValueNumber>(DoAfterItem));
+	}
+
+	for (int32 ParentsItem : ParentsArray)
+	{
+		ParentsJsonArray.Add(MakeShared<FJsonValueNumber>(ParentsItem));
+	}
+
+	JsonObject->SetNumberField(TEXT("us_id"), USData.ID);
+	JsonObject->SetStringField(TEXT("us_description"), USData.Description);
+	JsonObject->SetNumberField(TEXT("us_complexity"), USData.Complexity);
+	JsonObject->SetNumberField(TEXT("us_hours"), USData.Hours);
+	JsonObject->SetArrayField(TEXT("us_dobefore"), DoBeforeJsonArray);
+	JsonObject->SetArrayField(TEXT("us_doughter"), DoAfterJsonArray);
+	JsonObject->SetArrayField(TEXT("us_parent"), ParentsJsonArray);
+	JsonObject->SetBoolField(TEXT("Modeling"), Requare.Modeling);
+	JsonObject->SetBoolField(TEXT("Art"), Requare.Art);
+	JsonObject->SetBoolField(TEXT("Code"), Requare.Code);
+
+
+
+
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Выводим результат
+	UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::UpdateUserStoryReceive);
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	//Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::UpdateUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryUpdated_Callback.Broadcast(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--UserStory Updated--"));
+	}
+}
+
+
 
 
 
@@ -185,7 +689,7 @@ void AManagerHUD::GetTestVariantsDataSend()
 
 
 
-	FString URL = "http://26.76.184.253:8000/getvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getvariantsdata";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -241,7 +745,7 @@ void AManagerHUD::GetTestVariantsDataReceive(FHttpRequestPtr Request, FHttpRespo
 
 void AManagerHUD::AddCompletedTestVariantSend(int32 m_UserId, int32 m_VarID, int32 m_Score)
 {
-	FString URL = "http://26.76.184.253:8000/addcompletedvariants";
+	FString URL = "http://" + Config::SERVER_IP + "/addcompletedvariants";
 	FString OutputString;
 
 
@@ -279,7 +783,7 @@ void AManagerHUD::AddCompleteTestVariantRecieve(FHttpRequestPtr Request, FHttpRe
 
 void AManagerHUD::GetCompletedTestVariantsIdsSend(FString Id)
 {
-	FString URL = "http://26.76.184.253:8000/getcompletedvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getcompletedvariantsdata";
 	FString variant_id = Id;
 	URL = URL + "?user_id=" + variant_id;
 
@@ -364,7 +868,7 @@ void AManagerHUD::RateCustomAnswerReceive(FHttpRequestPtr Request, FHttpResponse
 void AManagerHUD::CreateTestVariantSend(FString m_Name, FString m_Group)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/createvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createvariant";
 
 
 	//AManagerHUD* Hud = Cast<AManagerHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -403,7 +907,7 @@ void AManagerHUD::CreateTestVariantReceive(FHttpRequestPtr Request, FHttpRespons
 void AManagerHUD::GetAllQuestionsSend(FString Id)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getallvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallvariantdata";
 	FString variant_id = Id;
 	URL = URL + "?variant_id=" + variant_id;
 
@@ -508,7 +1012,7 @@ void AManagerHUD::UpdateQuestionsSend(FString Id, TArray<FTestDataArrayStruct> A
 	TSharedRef<TJsonWriter<>> Writer2 = TJsonWriterFactory<>::Create(&StringToSend); //Ð‘Ð›Ð Ð‘Ð›Ð Ð‘Ð›Ð, Ð”ÐÐ›Ð•Ð• Ð’Ð¡Ð• ÐšÐÐš Ð˜ Ð ÐÐÐ¬Ð¨Ð•
 	FJsonSerializer::Serialize(JsonToSend.ToSharedRef(), Writer2);
 
-	FString URL = "http://26.76.184.253:8000/updatevariantquestions";
+	FString URL = "http://" + Config::SERVER_IP + "/updatevariantquestions";
 	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::UpdateQuestionsReceive);
 	Request->SetVerb("POST");
@@ -542,7 +1046,7 @@ void AManagerHUD::UpdateQuestionsReceive(FHttpRequestPtr Request, FHttpResponseP
 	FString group = GroupName;
 	uint32 user_id = UserID;
 
-	FString URL = "http://26.76.184.253:8000/getallusvariantsdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getallusvariantsdata";
 	FString OutputString;
 
   TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -611,7 +1115,7 @@ void AManagerHUD::CreateSimVariantSend(FString m_VariantName)
 	FString group = GroupName;
 	FString VariantName = m_VariantName;
 
-	FString URL = "http://26.76.184.253:8000/createemptyusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createemptyusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -665,7 +1169,7 @@ void AManagerHUD::DeleteVariantSend(int32 m_Var_ID)
 	uint32 Variant_ID = m_Var_ID;
 
 
-	FString URL = "http://26.76.184.253:8000/deleteusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/deleteusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -713,10 +1217,150 @@ void AManagerHUD::DeleteVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr 
 
 }
 
+//uint32 Variant_ID = m_Var_ID;
+//
+//
+//FString URL = "http://" + Config::SERVER_IP + "/deleteusvariant";
+//FString OutputString;
+//
+//TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+//JsonObject->SetNumberField("usvariant_id", Variant_ID);
+////JsonObject->SetStringField("usvariant_name", VariantName);
+//TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+//FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+//
+//TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+//Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::DeleteVariantRecive);
+//Request->SetVerb("POST");
+//Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+//Request->SetContentAsString(OutputString);
+//Request->SetURL(URL);
+//Request->ProcessRequest();
+//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(Variant_ID));
+
+void AManagerHUD::AssignEmployeeSend(int32 m_VarID, int32 m_EmployeeID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/addworkertovariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("worker_id", m_EmployeeID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::AssignEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::AssignEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeAssigned_Callback.Broadcast(true);
+	}
+}
+
+void AManagerHUD::RemoveEmployeeSend(int32 m_VarID, int32 m_EmployeeID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteworkerfromvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("worker_id", m_EmployeeID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::RemoveEmployeeReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::RemoveEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnEmployeeRemoved_Callback.Broadcast(true);
+	}
+}
+
+void AManagerHUD::AssignUserStorySend(int32 m_VarID, int32 m_UserStoryID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/addustovariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("US_id", m_UserStoryID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::AssignUserStoryReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::AssignUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryAssigned_Callback.Broadcast(true);
+	}
+}
+
+void AManagerHUD::RemoveUserStorySend(int32 m_VarID, int32 m_UserStoryID)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/deleteusfromvariant";
+	FString OutputString;
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetNumberField("US_id", m_UserStoryID);
+	JsonObject->SetNumberField("usvariant_id", m_VarID);
+
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::RemoveUserStoryReceive);
+	Request->SetVerb("POST");
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+void AManagerHUD::RemoveUserStoryReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnUserStoryRemoved_Callback.Broadcast(true);
+	}
+}
+
+
+
 void AManagerHUD::GetModifiersSend()
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getmodifiers";
+	FString URL = "http://" + Config::SERVER_IP + "/getmodifiers";
 
 	//URL = URL + "?usvariant_id=" + variant_id;
 
@@ -804,7 +1448,7 @@ void AManagerHUD::GetModifiersReceive(FHttpRequestPtr Request, FHttpResponsePtr 
 void AManagerHUD::CreateModifierSend(FModifierData Data, int32 Type)
 {
 
-	FString URL = "http://26.76.184.253:8000/createmodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/createmodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -843,7 +1487,7 @@ void AManagerHUD::DeleteModifierSend(int32 m_ID, int32 Type)
 {
 	uint32 ModifierID = m_ID;
 
-	FString URL = "http://26.76.184.253:8000/deletemodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/deletemodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -875,7 +1519,7 @@ void AManagerHUD::UpdateModifierSend(int32 m_ID, FModifierData Data)
 {
 	uint32 ModifierID = m_ID;
 
-	FString URL = "http://26.76.184.253:8000/updatemodifier";
+	FString URL = "http://" + Config::SERVER_IP + "/updatemodifier";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -912,7 +1556,7 @@ void AManagerHUD::UpdateModifierReceive(FHttpRequestPtr Request, FHttpResponsePt
 void AManagerHUD::GetSimVariantDataSend(int32 m_Var_ID)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getusvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getusvariantdata";
 
 
 

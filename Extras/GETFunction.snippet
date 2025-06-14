@@ -1,0 +1,28 @@
+<CodeSnippet Format="1.0.0">
+  <Header>
+    <Title>GET function</Title>
+    <Shortcut>GETFunc</Shortcut>
+    <Description>Unreal Engine HTTP GET Request with callback binding</Description>
+    <Author>YourName</Author>
+  </Header>
+  <Snippet>
+    <Code Language="cpp"><![CDATA[
+// Build the target URL using server config
+FString URL = "http://" + Config::SERVER_IP + "/DataBaseFunction";
+
+// Create and configure the HTTP request
+TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::ReceiveFunction);
+
+// (Place the following in the callback method to process response)
+// TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+// FString answer = Response->GetContentAsString();
+// TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+
+// Set HTTP method and send request
+Request->SetVerb("GET");
+Request->SetURL(URL);
+Request->ProcessRequest();
+]]></Code>
+  </Snippet>
+</CodeSnippet>

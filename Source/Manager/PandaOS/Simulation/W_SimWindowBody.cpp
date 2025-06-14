@@ -5,7 +5,7 @@
 #include "Manager/ManagerHUD.h"
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Manager/ManagerConfig.h"
 
 
 void UW_SimWindowBody::NativeConstruct()
@@ -21,7 +21,7 @@ void UW_SimWindowBody::CreateEmptyUsVariantSend(FString m_VariantName, FString m
 	FString group = m_Group;
 	FString VariantName = m_VariantName;
 	
-	FString URL = "http://26.76.184.253:8000/createemptyusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/createemptyusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -77,7 +77,7 @@ void UW_SimWindowBody::DeleteVariantSend(int32 m_Var_ID)
 	uint32 Variant_ID = m_Var_ID;
 
 
-	FString URL = "http://26.76.184.253:8000/deleteusvariant";
+	FString URL = "http://" + Config::SERVER_IP + "/deleteusvariant";
 	FString OutputString;
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -128,7 +128,7 @@ void UW_SimWindowBody::DeleteVariantRecive(FHttpRequestPtr Request, FHttpRespons
 void UW_SimWindowBody::GetVariantDataSend(int32 m_Var_ID)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/getusvariantdata";
+	FString URL = "http://" + Config::SERVER_IP + "/getusvariantdata";
 
 
 

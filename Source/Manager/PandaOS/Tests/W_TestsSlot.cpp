@@ -2,6 +2,7 @@
 
 
 #include "W_TestsSlot.h"
+#include "Manager/ManagerConfig.h"
 
 void UW_TestsSlot::NativeConstruct()
 {
@@ -10,7 +11,7 @@ void UW_TestsSlot::NativeConstruct()
 void UW_TestsSlot::DeleteVariantSend(FString m_TestId, FString m_QuestionId)
 {
 	FString OutputString;
-	FString URL = "http://26.76.184.253:8000/deletevariantorquestion";
+	FString URL = "http://SERVER_IP/deletevariantorquestion";
 
 
 	//AManagerHUD* Hud = Cast<AManagerHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -39,7 +40,7 @@ void UW_TestsSlot::DeleteVariantReceive(FHttpRequestPtr Request, FHttpResponsePt
 //void UW_TestsSlot::UpdateVariantSend(FString Id, FString Name, FString Group)
 //{
 //	FString OutputString;
-//	FString URL = "http://26.76.184.253:8000/updatevariant";
+//	FString URL = "http://SERVER_IP/updatevariant";
 //
 //	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 //	JsonObject->SetStringField("variant_id", TB_Login->TB_TextBox->GetText().ToString());
