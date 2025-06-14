@@ -106,6 +106,131 @@ void AManagerHUD::GenerateTestQuestionReceive(FHttpRequestPtr Request, FHttpResp
 	
 }
 
+void AManagerHUD::GetAllEmployeesSend()
+{
+	FString URL = "http://" + Config::SERVER_IP + "/getallworkers";
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetCompletedTestVariantsIdsReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+}
+
+
+
+
+
+
+void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		TArray<FEmployeeData> Employees;
+
+		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+		FString answer = Response->GetContentAsString();
+
+		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); 
+
+
+		const TArray<TSharedPtr<FJsonValue>>* EmployeesArray;
+		if (JsonObject->TryGetArrayField("workers", EmployeesArray))
+		{
+			for (const TSharedPtr<FJsonValue>& EmployeeValue : *EmployeesArray)
+			{
+				const TSharedPtr<FJsonObject> EmployeeObj = EmployeeValue->AsObject();
+				if (EmployeeObj.IsValid())
+				{
+					FEmployeeData Employee;
+
+
+					int32 EmployeeID = EmployeeObj->GetIntegerField("worker_id");
+					FString Employee_Name = EmployeeObj->GetStringField("worker_name");
+					FString Employee_Description = EmployeeObj->GetStringField("worker_description");
+					int32 Employee_MaxHours = EmployeeObj->GetIntegerField("worker_maxhours");
+					int32 Employee_MaxTasks = EmployeeObj->GetIntegerField("worker_maxtasks");
+					int32 Employee_Skill = EmployeeObj->GetIntegerField("worker_maxsp");
+					float Employee_Prof_3D = EmployeeObj->GetNumberField("worker_3D");
+					float Employee_Prof_2D = EmployeeObj->GetNumberField("worker_2D");
+					float Employee_Prof_Code = EmployeeObj->GetNumberField("worker_code");
+
+
+
+					// Get Modifiers
+
+					// Buffs
+					const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
+					if (EmployeeObj->TryGetArrayField("buffs", BuffsArray))
+					{
+						for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
+						{
+							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+							if (ModifierObj.IsValid())
+							{
+								FModifierData Buff;
+								Buff.ID = ModifierObj->GetIntegerField("buff_id");
+								Buff.Name = ModifierObj->GetStringField("buff_name");
+								Buff.Description = ModifierObj->GetStringField("buff_description");
+								Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
+								Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
+								Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
+								Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
+
+								// Add to struct here
+								Employee.Buffs.Add(Buff);
+
+							}
+						}
+					}
+
+
+					// Debuffs
+					const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
+					if (EmployeeObj->TryGetArrayField("debuffs", DebuffsArray))
+					{
+						for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
+						{
+							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+							if (ModifierObj.IsValid())
+							{
+								FModifierData Debuff;
+								Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
+								Debuff.Name = ModifierObj->GetStringField("debuff_name");
+								Debuff.Description = ModifierObj->GetStringField("debuff_description");
+								Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
+								Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
+								Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
+								Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
+
+								// Add to struct here
+								Employee.Debuffs.Add(Debuff);
+							}
+						}
+					}
+
+					Employee.ID = EmployeeID;
+					Employee.Name = Employee_Name;
+					Employee.Description = Employee_Description;
+					Employee.MaxHours = Employee_MaxHours;
+					Employee.MaxTasks = Employee_MaxTasks;
+					Employee.Skill = Employee_Skill;
+					Employee.Proficiency.Modeling = Employee_Prof_3D;
+					Employee.Proficiency.Art = Employee_Prof_2D;
+					Employee.Proficiency.Code = Employee_Prof_Code;
+
+					// Add Employee to sim data array
+					Employees.Add(Employee);
+
+				}
+			}
+
+			OnAllEmployeesReceived_Callback.Broadcast(true, Employees);
+		}
+
+	}
+}
+
 void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
 {
 	FString URL = "http://" + Config::SERVER_IP + "/createworker";
@@ -178,6 +303,8 @@ void AManagerHUD::AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr R
 		OnEmployeeAdded_Callback.Broadcast(false);
 	}
 }
+
+
 
 void AManagerHUD::DeleteEmployeeSend(int32 m_ID)
 {
@@ -274,6 +401,97 @@ void AManagerHUD::UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 	{
 		OnEmployeeUpdated_Callback.Broadcast(true);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("--Employee Updated--"));
+	}
+}
+
+void AManagerHUD::GetAllUserStoriesSend(FUSData USData, FProficiencyRequare Requare)
+{
+	FString URL = "http://" + Config::SERVER_IP + "/getalluserstories";
+
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::GetAllUserStoriesReceive);
+	Request->SetVerb("GET");
+	Request->SetURL(URL);
+	Request->ProcessRequest();
+
+}
+
+void AManagerHUD::GetAllUserStoriesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	FString answer = Response->GetContentAsString();
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer);
+
+	const TArray<TSharedPtr<FJsonValue>>* UserStoriesArray;
+	TArray<FUSData> UserStories;
+
+	if (JsonObject->TryGetArrayField("UserStories", UserStoriesArray))
+	{
+		for (const TSharedPtr<FJsonValue>& StoryValue : *UserStoriesArray)
+		{
+			const TSharedPtr<FJsonObject> StoryObj = StoryValue->AsObject();
+			if (StoryObj.IsValid())
+			{
+				FUSData USData;
+
+				int32 US_ID = StoryObj->GetIntegerField("us_id");
+				FString US_Description = StoryObj->GetStringField("us_description");
+				int32 US_Complexity = StoryObj->GetIntegerField("us_compexity");
+				int32 US_Hours = StoryObj->GetIntegerField("us_hours");
+
+
+				//  Get DoBefore Array
+				const TArray<TSharedPtr<FJsonValue>>* DoBeforeArray;
+				if (StoryObj->TryGetArrayField("us_dobefore", DoBeforeArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *DoBeforeArray)
+					{
+						int32 ID = Value->AsNumber();
+						USData.DoBefore.Add(ID);
+					}
+				}
+				//  Get Children Array
+				const TArray<TSharedPtr<FJsonValue>>* DoughterArray;
+				if (StoryObj->TryGetArrayField("us_doughter", DoughterArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *DoughterArray)
+					{
+						USData.ChildUS.Add(Value->AsNumber());
+					}
+				}
+				//  Get Parents Array
+				const TArray<TSharedPtr<FJsonValue>>* ParentArray;
+				if (StoryObj->TryGetArrayField("us_parent", ParentArray))
+				{
+					for (const TSharedPtr<FJsonValue>& Value : *ParentArray)
+					{
+						USData.ParentUS.Add(Value->AsNumber());
+					}
+				}
+
+
+
+				bool US_3D = StoryObj->GetBoolField("3D");
+				bool US_2D = StoryObj->GetBoolField("2D");
+				bool US_Code = StoryObj->GetBoolField("Code");
+
+				USData.ID = US_ID;
+				USData.Description = US_Description;
+				USData.Complexity = US_Complexity;
+				USData.Hours = US_Hours;
+				USData.Proficiencies.Modeling = US_3D;
+				USData.Proficiencies.Art = US_2D;
+				USData.Proficiencies.Code = US_Code;
+
+				// Add userstories array to variant data
+				UserStories.Add(USData);
+
+
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%s"), *SimVariantData.Name));
+			}
+		}
+
+		OnAllUserStoriesReceived_Callback.Broadcast(true, UserStories);
 	}
 }
 
@@ -1046,7 +1264,7 @@ void AManagerHUD::AssignEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 {
 	if (bWasSuccessful)
 	{
-
+		OnEmployeeAssigned_Callback.Broadcast(true);
 	}
 }
 
@@ -1075,7 +1293,7 @@ void AManagerHUD::RemoveEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 {
 	if (bWasSuccessful)
 	{
-
+		OnEmployeeRemoved_Callback.Broadcast(true);
 	}
 }
 
@@ -1104,7 +1322,7 @@ void AManagerHUD::AssignUserStoryReceive(FHttpRequestPtr Request, FHttpResponseP
 {
 	if (bWasSuccessful)
 	{
-
+		OnUserStoryAssigned_Callback.Broadcast(true);
 	}
 }
 
@@ -1133,7 +1351,7 @@ void AManagerHUD::RemoveUserStoryReceive(FHttpRequestPtr Request, FHttpResponseP
 {
 	if (bWasSuccessful)
 	{
-
+		OnUserStoryRemoved_Callback.Broadcast(true);
 	}
 }
 

@@ -37,13 +37,20 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierCreated, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierDeleted, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModifierUpdated, bool, Success);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAllEmployeesReceived, bool, Success, const TArray<FEmployeeData>&, Employees);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAdded, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeDeleted, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeUpdated, bool, Success);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAllUserStoriesReceived, bool, Success, const TArray<FUSData>&, UserStories);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserStoryAdded, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserStoryDeleted, bool, Success);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserStoryUpdated, bool, Success);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeAssigned, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserStoryAssigned, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmployeeRemoved, bool, Success);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserStoryRemoved, bool, Success);
 
 // 
 
@@ -141,6 +148,8 @@ public:
 	FOnModifierUpdated OnModifierUpdated_Callback;
 
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnAllEmployeesReceived OnAllEmployeesReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnEmployeeAdded OnEmployeeAdded_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnEmployeeDeleted OnEmployeeDeleted_Callback;
@@ -148,11 +157,22 @@ public:
 	FOnEmployeeUpdated OnEmployeeUpdated_Callback;
 
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnAllUserStoriesReceived OnAllUserStoriesReceived_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnUserStoryAdded OnUserStoryAdded_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnUserStoryDeleted OnUserStoryDeleted_Callback;
 	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
 	FOnUserStoryUpdated OnUserStoryUpdated_Callback;
+
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnEmployeeAssigned OnEmployeeAssigned_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnUserStoryAssigned OnUserStoryAssigned_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnEmployeeRemoved OnEmployeeRemoved_Callback;
+	UPROPERTY(BlueprintAssignable, Category = "Callbacks")
+	FOnUserStoryRemoved OnUserStoryRemoved_Callback;
 	//
 
 
@@ -262,6 +282,10 @@ public:
 	// SIMULATION - EMPLOYEES //
 
 	UFUNCTION(BlueprintCallable)
+	void GetAllEmployeesSend();
+	void GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
 	void AddEmployeeSend(FEmployeeData EmployeeData);
 	void AddEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
@@ -274,6 +298,10 @@ public:
 	void UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	// SIMULATION - USERSTORIES //
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllUserStoriesSend(FUSData USData, FProficiencyRequare Requare);
+	void GetAllUserStoriesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
 	void AddUserStorySend(FUSData USData, FProficiencyRequare Requare);

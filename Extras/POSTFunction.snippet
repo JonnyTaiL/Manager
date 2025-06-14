@@ -1,0 +1,44 @@
+<CodeSnippet Format="1.0.0">
+  <Header>
+    <Title>POSTFunction</Title>
+    <Shortcut>POSTFunc</Shortcut>
+    <Description>Unreal Engine HTTP POST Request with JSON body and callback</Description>
+    <Author>YourName</Author>
+  </Header>
+  <Snippet>
+    <Code Language="cpp"><![CDATA[
+// Build the target URL using server config
+FString URL = "http://" + Config::SERVER_IP + "/DataBaseFunction";
+
+// Create and configure the HTTP request
+TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+// Create JSON object for the request body
+TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+// Set JSON fields here
+// JsonObject->SetNumberField(TEXT("db_field"), m_variable);
+
+// Serialize the JSON object to a string
+FString OutputString;
+TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+// Optional: Log the output JSON string
+// UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+// Bind the response handler
+Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::ReceiveFunction);
+
+// Set HTTP request parameters
+Request->SetTimeout(120.0f);
+Request->SetVerb("POST");
+Request->SetURL(URL);
+Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+Request->SetContentAsString(OutputString);
+
+// Send the request
+Request->ProcessRequest();
+]]></Code>
+  </Snippet>
+</CodeSnippet>

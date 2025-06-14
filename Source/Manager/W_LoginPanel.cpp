@@ -51,8 +51,8 @@ void UW_LoginPanel::OnLoginButtonClicked_Implementation()
 	}
 	else {
 		FString OutputString;
-		//FString URL = "http://" + Config::SERVER_IP + "/checkuserdata";
-		FString URL = "http://26.193.76.196/checkuserdata";
+		FString URL = "http://" + Config::SERVER_IP + "/checkuserdata";
+		//FString URL = "http://26.193.76.196/checkuserdata";
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 		JsonObject->SetStringField("login", TB_Login->TB_TextBox->GetText().ToString());
 		JsonObject->SetStringField("password", TB_Password->TB_TextBox->GetText().ToString());
