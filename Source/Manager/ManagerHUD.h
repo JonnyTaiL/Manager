@@ -300,7 +300,7 @@ public:
 	// SIMULATION - USERSTORIES //
 
 	UFUNCTION(BlueprintCallable)
-	void GetAllUserStoriesSend(FUSData USData, FProficiencyRequare Requare);
+	void GetAllUserStoriesSend();
 	void GetAllUserStoriesReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)

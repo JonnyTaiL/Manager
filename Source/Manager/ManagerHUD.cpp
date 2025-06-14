@@ -404,7 +404,7 @@ void AManagerHUD::UpdateEmployeeReceive(FHttpRequestPtr Request, FHttpResponsePt
 	}
 }
 
-void AManagerHUD::GetAllUserStoriesSend(FUSData USData, FProficiencyRequare Requare)
+void AManagerHUD::GetAllUserStoriesSend()
 {
 	FString URL = "http://" + Config::SERVER_IP + "/getalluserstories";
 
