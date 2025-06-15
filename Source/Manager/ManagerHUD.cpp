@@ -131,15 +131,19 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 		FString answer = Response->GetContentAsString();
 
+
+		TArray<TSharedPtr<FJsonValue>> JsonArray;
 		TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); 
 
+		FJsonSerializer::Deserialize(JsonReader, JsonArray);
 
-		const TArray<TSharedPtr<FJsonValue>>* EmployeesArray;
-		if (JsonObject->TryGetArrayField("workers", EmployeesArray))
-		{
-			for (const TSharedPtr<FJsonValue>& EmployeeValue : *EmployeesArray)
+
+//		const TArray<TSharedPtr<FJsonValue>>* EmployeesArray;
+	//	if (JsonObject->TryGetArrayField("workers", EmployeesArray))
+	//	{
+			for (const TSharedPtr<FJsonValue>& JsonElement : JsonArray)
 			{
-				const TSharedPtr<FJsonObject> EmployeeObj = EmployeeValue->AsObject();
+				const TSharedPtr<FJsonObject> EmployeeObj = JsonElement->AsObject();
 				if (EmployeeObj.IsValid())
 				{
 					FEmployeeData Employee;
@@ -159,55 +163,55 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 
 					// Get Modifiers
 
-					// Buffs
-					const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
-					if (EmployeeObj->TryGetArrayField("buffs", BuffsArray))
-					{
-						for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
-						{
-							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
-							if (ModifierObj.IsValid())
-							{
-								FModifierData Buff;
-								Buff.ID = ModifierObj->GetIntegerField("buff_id");
-								Buff.Name = ModifierObj->GetStringField("buff_name");
-								Buff.Description = ModifierObj->GetStringField("buff_description");
-								Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
-								Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
-								Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
-								Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
+					//// Buffs
+					//const TArray<TSharedPtr<FJsonValue>>* BuffsArray;
+					//if (EmployeeObj->TryGetArrayField("buffs", BuffsArray))
+					//{
+					//	for (const TSharedPtr<FJsonValue>& ModifierValue : *BuffsArray)
+					//	{
+					//		const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+					//		if (ModifierObj.IsValid())
+					//		{
+					//			FModifierData Buff;
+					//			Buff.ID = ModifierObj->GetIntegerField("buff_id");
+					//			Buff.Name = ModifierObj->GetStringField("buff_name");
+					//			Buff.Description = ModifierObj->GetStringField("buff_description");
+					//			Buff.USCompleteChance = ModifierObj->GetNumberField("buff_USCompleteChance");
+					//			Buff.MaxSPModificator = ModifierObj->GetNumberField("buff_MaxSPModificator");
+					//			Buff.MaxHoursModificator = ModifierObj->GetNumberField("buff_MaxHoursModificator");
+					//			Buff.MaxTasksModificator = ModifierObj->GetNumberField("buff_MaxTasksModificator");
 
-								// Add to struct here
-								Employee.Buffs.Add(Buff);
+					//			// Add to struct here
+					//			Employee.Buffs.Add(Buff);
 
-							}
-						}
-					}
+					//		}
+					//	}
+					//}
 
 
-					// Debuffs
-					const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
-					if (EmployeeObj->TryGetArrayField("debuffs", DebuffsArray))
-					{
-						for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
-						{
-							const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
-							if (ModifierObj.IsValid())
-							{
-								FModifierData Debuff;
-								Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
-								Debuff.Name = ModifierObj->GetStringField("debuff_name");
-								Debuff.Description = ModifierObj->GetStringField("debuff_description");
-								Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
-								Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
-								Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
-								Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
+					//// Debuffs
+					//const TArray<TSharedPtr<FJsonValue>>* DebuffsArray;
+					//if (EmployeeObj->TryGetArrayField("debuffs", DebuffsArray))
+					//{
+					//	for (const TSharedPtr<FJsonValue>& ModifierValue : *DebuffsArray)
+					//	{
+					//		const TSharedPtr<FJsonObject> ModifierObj = ModifierValue->AsObject();
+					//		if (ModifierObj.IsValid())
+					//		{
+					//			FModifierData Debuff;
+					//			Debuff.ID = ModifierObj->GetIntegerField("debuff_id");
+					//			Debuff.Name = ModifierObj->GetStringField("debuff_name");
+					//			Debuff.Description = ModifierObj->GetStringField("debuff_description");
+					//			Debuff.USCompleteChance = ModifierObj->GetNumberField("debuff_USCompleteChance");
+					//			Debuff.MaxSPModificator = ModifierObj->GetNumberField("debuff_MaxSPModificator");
+					//			Debuff.MaxHoursModificator = ModifierObj->GetNumberField("debuff_MaxHoursModificator");
+					//			Debuff.MaxTasksModificator = ModifierObj->GetNumberField("debuff_MaxTasksModificator");
 
-								// Add to struct here
-								Employee.Debuffs.Add(Debuff);
-							}
-						}
-					}
+					//			// Add to struct here
+					//			Employee.Debuffs.Add(Debuff);
+					//		}
+					//	}
+					//}
 
 					Employee.ID = EmployeeID;
 					Employee.Name = Employee_Name;
@@ -227,7 +231,7 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 
 			OnAllEmployeesReceived_Callback.Broadcast(true, Employees);
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, Employees[0].Name);
-		}
+	//	}
 
 	}
 }
