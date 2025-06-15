@@ -226,6 +226,7 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 			}
 
 			OnAllEmployeesReceived_Callback.Broadcast(true, Employees);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, Employees[0].Name);
 		}
 
 	}
@@ -491,6 +492,7 @@ void AManagerHUD::GetAllUserStoriesReceive(FHttpRequestPtr Request, FHttpRespons
 			}
 		}
 
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, UserStories[0].Description);
 		OnAllUserStoriesReceived_Callback.Broadcast(true, UserStories);
 	}
 }
