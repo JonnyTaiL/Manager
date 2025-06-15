@@ -128,7 +128,7 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 	{
 		TArray<FEmployeeData> Employees;
 
-		TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	//	TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
 		FString answer = Response->GetContentAsString();
 
 
