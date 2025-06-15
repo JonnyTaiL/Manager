@@ -234,6 +234,10 @@ void AManagerHUD::GetAllEmployeesReceive(FHttpRequestPtr Request, FHttpResponseP
 	//	}
 
 	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "NOT SUCCESSFUL");
+	}
 }
 
 void AManagerHUD::AddEmployeeSend(FEmployeeData EmployeeData)
