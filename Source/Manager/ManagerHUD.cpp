@@ -1048,32 +1048,31 @@ void AManagerHUD::GetSimVariantsIdsReceive(FHttpRequestPtr Request, FHttpRespons
 
 
 
-void AManagerHUD::CreateSimVariantSend(FString m_VariantName)
-{
-	FString group = GroupName;
-	FString VariantName = m_VariantName;
+/*
+* FString group = GroupName;
+FString VariantName = m_VariantName;
 
-	FString URL = "http://" + Config::SERVER_IP + "/createemptyusvariant";
-	FString OutputString;
+FString URL = "http://" + Config::SERVER_IP + "/createemptyusvariant";
+FString OutputString;
 
-	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	JsonObject->SetStringField("group", group);
-	JsonObject->SetStringField("usvariant_name", VariantName);
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
-	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+JsonObject->SetStringField("group", group);
+JsonObject->SetStringField("usvariant_name", VariantName);
+TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-	Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::CreateSimVariantRecive);
-	Request->SetVerb("POST");
-	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	Request->SetContentAsString(OutputString);
-	Request->SetURL(URL);
-	Request->ProcessRequest();
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
-}
+TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+Request->OnProcessRequestComplete().BindUObject(this, &ThisClass::CreateSimVariantRecive);
+Request->SetVerb("POST");
+Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+Request->SetContentAsString(OutputString);
+Request->SetURL(URL);
+Request->ProcessRequest();
+GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, group);
 
-void AManagerHUD::CreateSimVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
-{
+
+
+
 
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
 	FString answer = Response->GetContentAsString();
@@ -1098,6 +1097,99 @@ void AManagerHUD::CreateSimVariantRecive(FHttpRequestPtr Request, FHttpResponseP
 	{
 		OnSimVariantCreated_Callback.Broadcast(false);
 	}
+
+*/
+
+
+void AManagerHUD::CreateSimVariantSend(FSimVariantData Data)
+{
+
+	// Build the target URL using server config
+	FString URL = "http://" + Config::SERVER_IP + "/createusvariant";
+
+	// Create and configure the HTTP request
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+	// Create JSON object for the request body
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	// Set JSON fields here
+	// JsonObject->SetNumberField(TEXT("db_field"), m_variable);
+
+	TArray<TSharedPtr<FJsonValue>> UserStories;
+	TArray<TSharedPtr<FJsonValue>> Employees;
+
+	TArray<int32> UserStoriesIds;
+	TArray<int32> EmployeesIds;
+
+	for (FUSData US : Data.UserStories)
+	{
+		UserStories.Add(MakeShareable(new FJsonValueNumber(US.ID)));
+	}
+	for (FEmployeeData Employee : Data.Employees)
+	{
+		Employees.Add(MakeShareable(new FJsonValueNumber(Employee.ID)));
+	}
+
+	JsonObject->SetStringField(TEXT("usvariant_name"), Data.Name);
+	JsonObject->SetNumberField(TEXT("usvariant_days"), Data.Days);
+	JsonObject->SetNumberField(TEXT("usvariant_sprints"), Data.Sprints);
+	JsonObject->SetStringField(TEXT("group"), FString::FromInt(Data.Group_ID));
+	JsonObject->SetArrayField(TEXT("us"), UserStories);
+	JsonObject->SetArrayField(TEXT("workers"), Employees);
+
+
+
+	// Serialize the JSON object to a string
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	// Optional: Log the output JSON string
+	// UE_LOG(LogTemp, Display, TEXT("JSON: %s"), *OutputString);
+
+	// Bind the response handler
+	Request->OnProcessRequestComplete().BindUObject(this, &AManagerHUD::CreateSimVariantRecive);
+
+	// Set HTTP request parameters
+	Request->SetTimeout(120.0f);
+	Request->SetVerb("POST");
+	Request->SetURL(URL);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(OutputString);
+
+	// Send the request
+	Request->ProcessRequest();
+
+
+}
+
+void AManagerHUD::CreateSimVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+
+	//TArray<TSharedPtr<FJsonValue>> JsonArray;
+	//FString answer = Response->GetContentAsString();
+	////GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, answer);
+
+	//TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<>::Create(answer); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSON ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	////TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+	//FJsonSerializer::Deserialize(JsonReader, JsonArray);
+
+
+
+
+	//FString callback_message = answer;
+
+
+
+	//if (callback_message == "1")
+	//{
+	//	OnSimVariantCreated_Callback.Broadcast(true);
+	//}
+	//else
+	//{
+	//	OnSimVariantCreated_Callback.Broadcast(false);
+	//}
 
 }
 
