@@ -234,7 +234,7 @@ public:
 	void GetSimVariantDataReceive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void CreateSimVariantSend(FString m_VariantName);
+	void CreateSimVariantSend(FSimVariantData Data);
 	void CreateSimVariantRecive(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
