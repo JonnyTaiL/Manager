@@ -783,6 +783,7 @@ void AManagerHUD::RateCustomAnswerSend(FString UserAnswer, FString CorrectAnswer
 	Request->SetVerb("POST");
 	Request->SetURL(URL);
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetHeader(TEXT("X-API-Key"), TEXT("SecretKeyFromGameEngine"));
 	Request->SetContentAsString(OutputString);
 	Request->ProcessRequest();
 }
